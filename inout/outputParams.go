@@ -1,8 +1,9 @@
 package inout
 
 import (
-	"core/global"
 	"time"
+
+	"github.com/JREAMLU/core/global"
 
 	"github.com/beego/i18n"
 )
