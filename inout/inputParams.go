@@ -17,8 +17,9 @@ type MetaHeader struct {
 	Source      []string `json:"Source" valid:"Required"`
 	Version     []string `json:"Version" valid:"Required"`
 	SecretKey   []string `json:"Secret-Key" valid:"Required"`
-	RequestID   []string `json:"Request-Id" valid:"Required"`
+	RequestID   []string `json:"Request-ID" valid:"Required"`
 	ContentType []string `json:"Content-Type" valid:"Required"`
+	Accept      []string `json:"Accept" valid:"Required"`
 	Token       []string `json:"Token" valid:"Required"`
 	IP          []string `json:"Ip" valid:"Required"`
 }
@@ -109,6 +110,18 @@ func MetaHeaderCheck(meta map[string][]string) (result Result, err error) {
 				result.RequestID = val[0]
 			}
 			return result, errors.New(i18n.Tr(global.Lang, "outputParams.CONTENTTYPEILLEGAL "))
+		}
+	}
+
+	//Accept
+	if val, ok := meta["Accept"]; ok {
+		if val[0] != beego.AppConfig.String("Accept") {
+			result.MetaCheckResult = nil
+			result.Message = i18n.Tr(global.Lang, "outputParams.ACCEPTILLEGAL")
+			if val, ok := meta["request-id"]; ok {
+				result.RequestID = val[0]
+			}
+			return result, errors.New(i18n.Tr(global.Lang, "outputParams.ACCEPTILLEGAL "))
 		}
 	}
 
