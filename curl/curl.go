@@ -54,7 +54,7 @@ func main() {
 			Method: "POST",
 			UrlStr: "http://localhost/study/curl/servera.php",
 			Header: map[string]string{
-				"Content-Type": "application/json",
+				"Content-Type": "application/json;charset=UTF-8;",
 			},
 			Raw: `{"name":"KII","age":24}`,
 		},
