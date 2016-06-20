@@ -39,8 +39,8 @@ func (this *BaseController) Prepare() {
 	}
 
 	// Initialized language type list.
-	langs := strings.Split(beego.AppConfig.String("lang::types"), "|")
-	names := strings.Split(beego.AppConfig.String("lang::names"), "|")
+	langs := strings.Split(beego.AppConfig.String("lang.types"), "|")
+	names := strings.Split(beego.AppConfig.String("lang.names"), "|")
 	langTypes := make([]*langType, 0, len(langs))
 	for i, v := range langs {
 		langTypes = append(langTypes, &langType{
@@ -60,8 +60,8 @@ func (this *BaseController) Prepare() {
 
 func GoGetAllAppConfig() map[string]interface{} {
 	var core = make(map[string]interface{})
-	core["author"] = beego.AppConfig.String("core::author")
-	core["ProjectName"] = beego.AppConfig.String("core::ProjectName")
+	core["author"] = beego.AppConfig.String("core.author")
+	core["ProjectName"] = beego.AppConfig.String("core.ProjectName")
 
 	for key, value := range core {
 		fmt.Println(key, ":", value)
@@ -71,11 +71,11 @@ func GoGetAllAppConfig() map[string]interface{} {
 }
 
 func (this *BaseController) GoGetAuthor() string {
-	return beego.AppConfig.String("core::author")
+	return beego.AppConfig.String("core.author")
 }
 
 func (this *BaseController) GoGetProjectName() string {
-	return beego.AppConfig.String("core::ProjectName")
+	return beego.AppConfig.String("core.ProjectName")
 }
 
 func (this *BaseController) GogetUrlDomain() string {
