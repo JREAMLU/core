@@ -1,6 +1,7 @@
 package sign
 
 import (
+	"bytes"
 	"encoding/json"
 	"reflect"
 	"sort"
@@ -15,16 +16,20 @@ func GenerateSign(requestData []byte, requestTime int64, secretKey string) strin
 	var rdata map[string]interface{}
 	json.Unmarshal([]byte(requestData), &rdata)
 	str := Serialize(rdata)
-	serial := secretKey + str.(string) + secretKey + strconv.FormatInt(int64(requestTime), 10)
-	serial, _ = crypto.Sha1(serial)
-	serial, _ = crypto.MD5(serial)
+	var serial bytes.Buffer
+	serial.WriteString(secretKey)
+	serial.WriteString(str.(string))
+	serial.WriteString(secretKey)
+	serial.WriteString(strconv.FormatInt(int64(requestTime), 10))
+	sign, _ := crypto.Sha1(serial.String())
+	sign, _ = crypto.MD5(sign)
 
-	return strings.ToUpper(serial)
+	return strings.ToUpper(sign)
 }
 
 // Serialize 序列化 && 递归ksort
 func Serialize(data interface{}) interface{} {
-	var str string
+	var buffer bytes.Buffer
 	switch reflect.TypeOf(data).Kind() {
 	case reflect.Slice:
 		s := reflect.ValueOf(data)
@@ -33,9 +38,10 @@ func Serialize(data interface{}) interface{} {
 			if reflect.TypeOf(serial).Kind() == reflect.Float64 {
 				serial = strconv.Itoa(int(serial.(float64)))
 			}
-			str = str + strconv.Itoa(i) + serial.(string)
+			buffer.WriteString(strconv.Itoa(i))
+			buffer.WriteString(serial.(string))
 		}
-		return str
+		return buffer.String()
 	case reflect.Map:
 		s := reflect.ValueOf(data)
 		keys := s.MapKeys()
@@ -50,9 +56,10 @@ func Serialize(data interface{}) interface{} {
 			if reflect.TypeOf(serial).Kind() == reflect.Float64 {
 				serial = strconv.Itoa(int(serial.(float64)))
 			}
-			str = str + key + serial.(string)
+			buffer.WriteString(key)
+			buffer.WriteString(serial.(string))
 		}
-		return str
+		return buffer.String()
 	}
 
 	return data
