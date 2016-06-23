@@ -101,7 +101,7 @@ func ValidSign(requestData []byte, secretKey string) error {
 
 	//时间是否合理
 	if diff := time.Now().Unix() - timestamp; diff > 600 {
-		return errors.New(i18n.Tr(global.Lang, "sign.INVALIDSIGNATURETIME"))
+		return errors.New(i18n.Tr(global.Lang, "sign.SIGNATURETIMEEXPIRED"))
 	}
 
 	return nil
