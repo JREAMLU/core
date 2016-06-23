@@ -3,12 +3,16 @@ package sign
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"reflect"
 	"sort"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/JREAMLU/core/crypto"
+	"github.com/JREAMLU/core/global"
+	"github.com/beego/i18n"
 )
 
 //GenerateSign 生成签名 参数key全部按键值排序     ToUpper(md5(sha1(SecretKey1Value1Key2Value2SecretTime)))
@@ -63,4 +67,42 @@ func Serialize(data interface{}) interface{} {
 	}
 
 	return data
+}
+
+//ValidSign 签名验证
+func ValidSign(requestData []byte, secretKey string) error {
+	//取出sign Timestamp
+	var rdata map[string]interface{}
+	json.Unmarshal(requestData, &rdata)
+	data, _ := rdata["data"].(map[string]interface{})
+	sign := data["sign"].(string)
+	timestamp := int64(data["timestamp"].(float64))
+
+	//去除sign
+	_, ok := data["sign"]
+	if ok {
+		delete(data, "sign")
+	}
+
+	var nrdata = make(map[string]interface{})
+	nrdata["data"] = data
+	jsonData, err := json.Marshal(nrdata)
+	if err != nil {
+		return err
+	}
+
+	//生成签名
+	signed := GenerateSign(jsonData, timestamp, secretKey)
+
+	//对比sign
+	if sign != signed {
+		return errors.New(i18n.Tr(global.Lang, "sign.INVALIDSIGNATURE"))
+	}
+
+	//时间是否合理
+	if diff := time.Now().Unix() - timestamp; diff > 600 {
+		return errors.New(i18n.Tr(global.Lang, "sign.INVALIDSIGNATURETIME"))
+	}
+
+	return nil
 }

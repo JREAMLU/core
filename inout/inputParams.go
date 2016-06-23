@@ -6,6 +6,7 @@ import (
 	"log"
 
 	"github.com/JREAMLU/core/global"
+	"github.com/JREAMLU/core/sign"
 
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/validation"
@@ -36,10 +37,11 @@ type Result struct {
  *	@logic
  *	@todo		返回值
  *	@meta		meta map[string][]string	   rawMetaHeader
+ *	@data		data []byte 					rawDataBody 签名验证
  *	@data		data ...interface{}	切片指针	rawDataBody
  *	@return 	返回 true, metaMap, error
  */
-func InputParamsCheck(meta map[string][]string, data ...interface{}) (result Result, err error) {
+func InputParamsCheck(meta map[string][]string, rawDataBody []byte, data ...interface{}) (result Result, err error) {
 	//MetaHeader check
 	metaCheckResult, err := MetaHeaderCheck(meta)
 	if err != nil {
@@ -57,18 +59,27 @@ func InputParamsCheck(meta map[string][]string, data ...interface{}) (result Res
 		//检查参数
 		if err != nil {
 			// handle error
-			log.Println(i18n.Tr(global.Lang, "outputParams.SYSTEMILLEGAL"), err)
+			beego.Trace(i18n.Tr(global.Lang, "outputParams.SYSTEMILLEGAL") + err.Error())
 		}
 
 		if !is {
 			for _, err := range valid.Errors {
-				log.Println(i18n.Tr(global.Lang, "outputParams.DATAPARAMSILLEGAL"), err.Key, ":", err.Message)
+				beego.Trace("入参body:" + i18n.Tr(global.Lang, "outputParams.DATAPARAMSILLEGAL") + err.Key + ":" + err.Message)
 				result.MetaCheckResult = nil
 				result.RequestID = metaCheckResult.MetaCheckResult["request-id"]
 				result.Message = i18n.Tr(global.Lang, "outputParams.DATAPARAMSILLEGAL") + " " + err.Key + ":" + err.Message
 				return result, errors.New(i18n.Tr(global.Lang, "outputParams.DATAPARAMSILLEGAL"))
 			}
 		}
+	}
+
+	//sign check
+	err = sign.ValidSign(rawDataBody, beego.AppConfig.String("sign.secretKey"))
+	if err != nil {
+		result.MetaCheckResult = nil
+		result.RequestID = metaCheckResult.MetaCheckResult["request-id"]
+		result.Message = err.Error()
+		return result, err
 	}
 
 	return metaCheckResult, nil
