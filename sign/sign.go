@@ -18,6 +18,7 @@ import (
 )
 
 //GenerateSign 生成签名 参数key全部按键值排序     ToUpper(md5(sha1(base64(urlencode(SecretKey1Value1Key2Value2SecretTime)))))
+//strtoupper( md5 ( sha1( base64_encode( urlencode( secret_key . static::serialize( request_data ) . secret_key . request_time ) ) ) ) )
 func GenerateSign(requestData []byte, requestTime int64, secretKey string) string {
 	var rdata map[string]interface{}
 	json.Unmarshal([]byte(requestData), &rdata)
@@ -88,9 +89,7 @@ func ValidSign(requestData []byte, secretKey string) error {
 		delete(data, "sign")
 	}
 
-	var nrdata = make(map[string]interface{})
-	nrdata["data"] = data
-	jsonData, err := json.Marshal(nrdata)
+	jsonData, err := json.Marshal(rdata)
 	if err != nil {
 		return err
 	}
