@@ -2,8 +2,10 @@ package sign
 
 import (
 	"bytes"
+	"encoding/base64"
 	"encoding/json"
 	"errors"
+	"net/url"
 	"reflect"
 	"sort"
 	"strconv"
@@ -15,7 +17,7 @@ import (
 	"github.com/beego/i18n"
 )
 
-//GenerateSign 生成签名 参数key全部按键值排序     ToUpper(md5(sha1(SecretKey1Value1Key2Value2SecretTime)))
+//GenerateSign 生成签名 参数key全部按键值排序     ToUpper(md5(sha1(base64(urlencode(SecretKey1Value1Key2Value2SecretTime)))))
 func GenerateSign(requestData []byte, requestTime int64, secretKey string) string {
 	var rdata map[string]interface{}
 	json.Unmarshal([]byte(requestData), &rdata)
@@ -25,7 +27,9 @@ func GenerateSign(requestData []byte, requestTime int64, secretKey string) strin
 	serial.WriteString(str.(string))
 	serial.WriteString(secretKey)
 	serial.WriteString(strconv.FormatInt(int64(requestTime), 10))
-	sign, _ := crypto.Sha1(serial.String())
+	urlencodeSerial := url.QueryEscape(serial.String())
+	urlencodeBase64Serial := base64.StdEncoding.EncodeToString([]byte(urlencodeSerial))
+	sign, _ := crypto.Sha1(urlencodeBase64Serial)
 	sign, _ = crypto.MD5(sign)
 
 	return strings.ToUpper(sign)
