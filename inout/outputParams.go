@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/JREAMLU/core/global"
+	"github.com/astaxie/beego"
 
 	"github.com/beego/i18n"
 )
@@ -68,8 +69,9 @@ type Output struct {
 }
 
 type MetaList struct {
-	RequestId string `json:"Request-Id"`
-	UpdatedAt string `json:"updated_at"`
+	RequestId string    `json:"Request-Id"`
+	UpdatedAt time.Time `json:"updated_at"`
+	Timezone  string    `json:"timezone"`
 }
 
 /*
@@ -90,7 +92,8 @@ type dataList struct {
 func OutputSuccess(data interface{}, requestID string) Output {
 	var op Output
 	op.Meta.RequestId = requestID
-	op.Meta.UpdatedAt = time.Now().Format("2006-01-02 15:04:05")
+	op.Meta.UpdatedAt = time.Now()
+	op.Meta.Timezone = beego.AppConfig.String("Timezone")
 
 	op.StatusCode = SUCCESS
 
@@ -104,7 +107,8 @@ func OutputSuccess(data interface{}, requestID string) Output {
 func OutputFail(msg interface{}, status string, requestID string) Output {
 	var op Output
 	op.Meta.RequestId = requestID
-	op.Meta.UpdatedAt = time.Now().Format("2006-01-02 15:04:05")
+	op.Meta.UpdatedAt = time.Now()
+	op.Meta.Timezone = beego.AppConfig.String("Timezone")
 
 	switch status {
 	case "SUCCESS":

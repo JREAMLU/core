@@ -1,14 +1,16 @@
 package inout
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
-	"log"
+	"net/http"
 
 	"github.com/JREAMLU/core/global"
 	"github.com/JREAMLU/core/sign"
 
 	"github.com/astaxie/beego"
+	"github.com/astaxie/beego/context"
 	"github.com/astaxie/beego/validation"
 	"github.com/beego/i18n"
 	"github.com/pquerna/ffjson/ffjson"
@@ -29,6 +31,19 @@ type Result struct {
 	MetaCheckResult map[string]string
 	RequestID       string
 	Message         string
+}
+
+func InputParams(r *context.BeegoInput) (http.Header, []byte) {
+	rawMetaHeader := r.Context.Request.Header
+	rawDataBody := r.RequestBody
+
+	js, _ := json.Marshal(rawMetaHeader)
+
+	//记录参数日志
+	beego.Trace("input params header :" + string(js))
+	beego.Trace("input params body :" + string(rawDataBody))
+
+	return rawMetaHeader, rawDataBody
 }
 
 /**
@@ -64,7 +79,7 @@ func InputParamsCheck(meta map[string][]string, rawDataBody []byte, data ...inte
 
 		if !is {
 			for _, err := range valid.Errors {
-				beego.Trace("入参body:" + i18n.Tr(global.Lang, "outputParams.DATAPARAMSILLEGAL") + err.Key + ":" + err.Message)
+				beego.Trace("input params body check : " + i18n.Tr(global.Lang, "outputParams.DATAPARAMSILLEGAL") + err.Key + ":" + err.Message)
 				result.MetaCheckResult = nil
 				result.RequestID = metaCheckResult.MetaCheckResult["request-id"]
 				result.Message = i18n.Tr(global.Lang, "outputParams.DATAPARAMSILLEGAL") + " " + err.Key + ":" + err.Message
@@ -79,7 +94,7 @@ func InputParamsCheck(meta map[string][]string, rawDataBody []byte, data ...inte
 		result.MetaCheckResult = nil
 		result.RequestID = metaCheckResult.MetaCheckResult["request-id"]
 		result.Message = err.Error()
-		return result, err
+		// return result, err
 	}
 
 	return metaCheckResult, nil
@@ -96,14 +111,13 @@ func InputParamsCheck(meta map[string][]string, rawDataBody []byte, data ...inte
  */
 func MetaHeaderCheck(meta map[string][]string) (result Result, err error) {
 	rawMetaHeader, _ := ffjson.Marshal(meta)
-	beego.Trace("入参meta:" + string(rawMetaHeader))
 	var metaHeader MetaHeader
 	ffjson.Unmarshal(rawMetaHeader, &metaHeader)
 
 	//日志
 	fmt.Println("meta json解析:", metaHeader)
 	for key, val := range meta {
-		fmt.Println("meta 解析", key, ":", val[0])
+		beego.Trace("meta analysis : " + key + ":" + val[0])
 	}
 
 	valid := validation.Validation{}
@@ -139,12 +153,12 @@ func MetaHeaderCheck(meta map[string][]string) (result Result, err error) {
 	//检查参数
 	if err != nil {
 		// handle error
-		log.Println(i18n.Tr(global.Lang, "outputParams.SYSTEMILLEGAL"), err)
+		beego.Trace(i18n.Tr(global.Lang, "outputParams.SYSTEMILLEGAL") + err.Error())
 	}
 
 	if !is {
 		for _, err := range valid.Errors {
-			log.Println(i18n.Tr(global.Lang, "outputParams.METAPARAMSILLEGAL"), err.Key, ":", err.Message)
+			beego.Trace(i18n.Tr(global.Lang, "outputParams.METAPARAMSILLEGAL") + err.Key + ":" + err.Message)
 			result.MetaCheckResult = nil
 			result.Message = i18n.Tr(global.Lang, "outputParams.METAPARAMSILLEGAL") + " " + err.Key + ":" + err.Message
 			if val, ok := meta["request-id"]; ok {
@@ -176,5 +190,3 @@ func MetaHeaderCheck(meta map[string][]string) (result Result, err error) {
 func getRequestID() string {
 	return "RRRRRRRRRRRRRRRRRRRR"
 }
-
-//Token 验证
