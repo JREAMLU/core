@@ -1,12 +1,14 @@
 package inout
 
 import (
+	"bytes"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
 
 	"github.com/JREAMLU/core/global"
+	"github.com/JREAMLU/core/guid"
 	"github.com/JREAMLU/core/sign"
 
 	"github.com/astaxie/beego"
@@ -18,12 +20,12 @@ import (
 
 type MetaHeader struct {
 	Source      []string `json:"Source" valid:"Required"`
-	Version     []string `json:"Version" valid:"Required"`
-	SecretKey   []string `json:"Secret-Key" valid:"Required"`
+	Version     []string `json:"Version" `
+	SecretKey   []string `json:"Secret-Key" `
 	RequestID   []string `json:"Request-ID" valid:"Required"`
 	ContentType []string `json:"Content-Type" valid:"Required"`
 	Accept      []string `json:"Accept" valid:"Required"`
-	Token       []string `json:"Token" valid:"Required"`
+	Token       []string `json:"Token" `
 	IP          []string `json:"Ip" valid:"Required"`
 }
 
@@ -131,8 +133,9 @@ func MetaHeaderCheck(meta map[string][]string) (result Result, err error) {
 		if val[0] != beego.AppConfig.String("Content-Type") {
 			result.MetaCheckResult = nil
 			result.Message = i18n.Tr(global.Lang, "outputParams.CONTENTTYPEILLEGAL")
-			if val, ok := meta["request-id"]; ok {
+			if val, ok := meta["Request-Id"]; ok {
 				result.RequestID = val[0]
+				result.RequestID = GetRequestID()
 			}
 			return result, errors.New(i18n.Tr(global.Lang, "outputParams.CONTENTTYPEILLEGAL "))
 		}
@@ -143,7 +146,7 @@ func MetaHeaderCheck(meta map[string][]string) (result Result, err error) {
 		if val[0] != beego.AppConfig.String("Accept") {
 			result.MetaCheckResult = nil
 			result.Message = i18n.Tr(global.Lang, "outputParams.ACCEPTILLEGAL")
-			if val, ok := meta["request-id"]; ok {
+			if val, ok := meta["Request-Id"]; ok {
 				result.RequestID = val[0]
 			}
 			return result, errors.New(i18n.Tr(global.Lang, "outputParams.ACCEPTILLEGAL "))
@@ -176,7 +179,7 @@ func MetaHeaderCheck(meta map[string][]string) (result Result, err error) {
 
 	//日志
 	if len(metaMap["request-id"]) == 0 {
-		metaMap["request-id"] = getRequestID()
+		metaMap["request-id"] = GetRequestID()
 	}
 
 	result.MetaCheckResult = metaMap
@@ -187,6 +190,10 @@ func MetaHeaderCheck(meta map[string][]string) (result Result, err error) {
 }
 
 //request id增加
-func getRequestID() string {
-	return "RRRRRRRRRRRRRRRRRRRR"
+func GetRequestID() string {
+	var requestID bytes.Buffer
+	requestID.WriteString(beego.AppConfig.String("appname"))
+	requestID.WriteString("-")
+	requestID.WriteString(guid.NewObjectId().Hex())
+	return requestID.String()
 }
