@@ -4,6 +4,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"strings"
+	"time"
 )
 
 type Requests struct {
@@ -15,7 +16,11 @@ type Requests struct {
 
 //RollingCurl http请求url
 func RollingCurl(r Requests) (string, error) {
-	client := &http.Client{}
+	i := 0
+RELOAD:
+	client := &http.Client{
+		Timeout: 15 * time.Second,
+	}
 
 	req, err := http.NewRequest(
 		r.Method,
@@ -33,6 +38,10 @@ func RollingCurl(r Requests) (string, error) {
 
 	resp, err := client.Do(req)
 	if err != nil {
+		i++
+		if i < 3 {
+			goto RELOAD
+		}
 		return "", err
 	}
 
