@@ -1,11 +1,8 @@
 package conv
 
-import (
-	"encoding/json"
-	"net/http"
-)
+import "net/http"
 
-func CookiesToJson(r *http.Request) string {
+func CookiesToJson(r *http.Request) map[string]interface{} {
 	var cookies = make(map[string]interface{})
 	for _, v := range r.Cookies() {
 		vint64, err := AssignGetInt64(v.Value)
@@ -20,6 +17,5 @@ func CookiesToJson(r *http.Request) string {
 		}
 		cookies[v.Name] = v.Value
 	}
-	js, _ := json.Marshal(cookies)
-	return string(js)
+	return cookies
 }
