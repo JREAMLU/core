@@ -23,7 +23,7 @@ func AssignGetFloat64(str string) (float64, error) {
 	return strf, nil
 }
 
-func SthToJson(sth map[string][]string) map[string]interface{} {
+func SthToMap(sth map[string][]string) map[string]interface{} {
 	var sths = make(map[string]interface{})
 	for k, v := range sth {
 		vint64, err := AssignGetInt64(v[0])

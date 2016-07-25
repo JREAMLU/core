@@ -9,9 +9,9 @@ import (
 
 //GetHGC header get cookies
 func GetHGC(r *http.Request) string {
-	header := HeaderToJson(r)
-	get := GetToJson(r)
-	cookies := CookiesToJson(r)
+	header := HeaderToMap(r)
+	get := GetToMap(r)
+	cookies := CookiesToMap(r)
 
 	result := com.MapMerge(header, get, cookies)
 
