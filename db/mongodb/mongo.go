@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 
-	"gopkg.in/mgo.v2"
+	mgo "gopkg.in/mgo.v2"
 )
 
 type MongoClient struct {
@@ -179,5 +179,53 @@ func DeteleLogs(id interface{}) error {
 	defer session.Close()
 	c := session.DB(mongoClient.DBName).C("cron")
 	return c.Remove(bson.M{"_id": id}) //bson.ObjectIdHex("574c1a1020733e03a077c772")
+}
+func AddLogsBatch(docs []interface{}) (id interface{}, err error) {
+	session, err := mongoClient.Session()
+	if err != nil {
+		return nil, err
+	}
+	defer session.Close()
+
+	c := session.DB(mongoClient.DBName).C("cron")
+
+	if !mongoClient.CollectExists(session.DB(mongoClient.DBName), "cron") {
+		cIndex := mgo.Index{Key: []string{"pid"}, Unique: false, Background: false}
+		c.EnsureIndex(cIndex)
+	}
+
+	b := c.Bulk()
+	b.Insert(docs...)
+	// b.Insert(docs...)
+	// b.Insert(docs...)
+	res, err := b.Run()
+
+	fmt.Println("res", res)
+	if err != nil {
+		return nil, err
+	}
+	return nil, nil
+}
+
+func AddLogsBat(docs []interface{}) (id interface{}, err error) {
+	session, err := mongoClient.Session()
+	if err != nil {
+		return nil, err
+	}
+	defer session.Close()
+
+	c := session.DB(mongoClient.DBName).C("cron")
+
+	if !mongoClient.CollectExists(session.DB(mongoClient.DBName), "cron") {
+		cIndex := mgo.Index{Key: []string{"pid"}, Unique: false, Background: false}
+		c.EnsureIndex(cIndex)
+	}
+
+	err = c.Insert(docs...)
+
+	if err != nil {
+		return nil, err
+	}
+	return nil, nil
 }
 */
