@@ -1,9 +1,5 @@
 package com
 
-import "sync"
-
-var mu sync.Mutex
-
 func MapMerge(ms ...map[string]interface{}) map[string]interface{} {
 	var nm = make(map[string]interface{})
 	for _, m := range ms {
