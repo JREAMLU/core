@@ -1,16 +1,10 @@
 package com
 
 import (
+	"errors"
 	"net"
 	"strconv"
 	"strings"
-)
-
-const (
-	LO       = "lo"
-	LOOPBACK = "loopback"
-	ETH0     = "eth0"
-	ETH1     = "eth1"
 )
 
 func Ip2Int(ip string) int64 {
@@ -46,53 +40,39 @@ func Int2Ip(ip int64) string {
 	return strings.Join(result[:], ".")
 }
 
-func GetServerIP() string {
-	list, err := net.Interfaces()
+func ExternalIP() (string, error) {
+	ifaces, err := net.Interfaces()
 	if err != nil {
-		panic(err)
+		return "", err
 	}
-
-	var ipMap = make(map[string]string)
-	ipMap[LO] = ""
-	ipMap[LOOPBACK] = ""
-	ipMap[ETH0] = ""
-	ipMap[ETH1] = ""
-
-	for _, iface := range list {
-		// fmt.Printf("%d name=%s %v\n", i, iface.Name, iface)
+	for _, iface := range ifaces {
+		if iface.Flags&net.FlagUp == 0 {
+			continue // interface down
+		}
+		if iface.Flags&net.FlagLoopback != 0 {
+			continue // loopback interface
+		}
 		addrs, err := iface.Addrs()
 		if err != nil {
-			panic(err)
+			return "", err
 		}
 		for _, addr := range addrs {
-			// fmt.Printf(" %d %v\n", j, addr)
-			name := strings.Split(strings.ToLower(iface.Name), " ")
-			ip := strings.Split(addr.String(), "/")
-
-			switch name[0] {
-			case LO:
-			case LOOPBACK:
-			case ETH0:
-			case ETH1:
+			var ip net.IP
+			switch v := addr.(type) {
+			case *net.IPNet:
+				ip = v.IP
+			case *net.IPAddr:
+				ip = v.IP
 			}
-			if name[0] == LO || name[0] == LOOPBACK || name[0] == ETH0 || name[0] == ETH1 {
-				ipMap[name[0]] = ip[0]
+			if ip == nil || ip.IsLoopback() {
+				continue
 			}
+			ip = ip.To4()
+			if ip == nil {
+				continue // not an ipv4 address
+			}
+			return ip.String(), nil
 		}
 	}
-
-	if ipMap[ETH0] != "" {
-		return ipMap[ETH0]
-	}
-	if ipMap[ETH1] != "" {
-		return ipMap[ETH1]
-	}
-	if ipMap[LO] != "" {
-		return ipMap[LO]
-	}
-	if ipMap[LOOPBACK] != "" {
-		return ipMap[LOOPBACK]
-	}
-
-	return "127.0.0.1"
+	return "", errors.New("are you connected to the network?")
 }
