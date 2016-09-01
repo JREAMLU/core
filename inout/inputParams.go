@@ -4,21 +4,19 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"net/http"
 
 	"github.com/JREAMLU/core/global"
 	"github.com/JREAMLU/core/guid"
-	"github.com/JREAMLU/core/sign"
+	"github.com/beego/i18n"
 
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/context"
 	"github.com/astaxie/beego/validation"
-	"github.com/beego/i18n"
 	"github.com/pquerna/ffjson/ffjson"
 )
 
-type MetaHeader struct {
+type Header struct {
 	Source      []string `json:"Source" valid:"Required"`
 	Version     []string `json:"Version" `
 	SecretKey   []string `json:"Secret-Key" `
@@ -30,9 +28,9 @@ type MetaHeader struct {
 }
 
 type Result struct {
-	MetaCheckResult map[string]string
-	RequestID       string
-	Message         string
+	CheckRes  map[string]string
+	RequestID string
+	Message   string
 }
 
 func InputParams(r *context.BeegoInput) (http.Header, []byte) {
@@ -48,6 +46,39 @@ func InputParams(r *context.BeegoInput) (http.Header, []byte) {
 	return rawMetaHeader, rawDataBody
 }
 
+func InputParamsNew(r *context.Context) map[string]interface{} {
+	r.Request.ParseForm()
+
+	headerMap := r.Request.Header
+	header, _ := json.Marshal(headerMap)
+
+	body := r.Input.RequestBody
+
+	cookiesSlice := r.Request.Cookies()
+	cookies, _ := json.Marshal(cookiesSlice)
+
+	querystrMap := r.Request.Form
+	querystr, _ := json.Marshal(querystrMap)
+
+	beego.Trace("input params header" + string(header))
+	beego.Trace("input params body" + string(body))
+	beego.Trace("input params cookies" + string(cookies))
+	beego.Trace("input params querystr" + string(querystr))
+
+	data := make(map[string]interface{})
+	mu.Lock()
+	data["header"] = header
+	data["body"] = body
+	data["cookies"] = cookies
+	data["querystr"] = querystr
+	data["headermap"] = headerMap
+	data["cookiesslice"] = cookiesSlice
+	data["querystrmap"] = querystrMap
+	mu.Unlock()
+
+	return data
+}
+
 /**
  *	@auther		jream.lu
  *	@intro		入参验证
@@ -58,133 +89,185 @@ func InputParams(r *context.BeegoInput) (http.Header, []byte) {
  *	@data		data ...interface{}	切片指针	rawDataBody
  *	@return 	返回 true, metaMap, error
  */
-func InputParamsCheck(meta map[string][]string, rawDataBody []byte, data ...interface{}) (result Result, err error) {
-	//MetaHeader check
-	metaCheckResult, err := MetaHeaderCheck(meta)
+func InputParamsCheck(data map[string]interface{}, stdata ...interface{}) (result Result, err error) {
+	headerRes, err := HeaderCheck(data)
 	if err != nil {
-		return metaCheckResult, err
+		return headerRes, err
 	}
 
 	//DataParams check
-	valid := validation.Validation{}
+	// valid := validation.Validation{}
+	//
+	// for _, val := range stdata {
+	// 	is, err := valid.Valid(val)
+	// 	if err != nil {
+	// 		// handle error
+	// 		beego.Trace(i18n.Tr(global.Lang, "outputParams.SYSTEMILLEGAL") + err.Error())
+	// 	}
+	//
+	// 	if !is {
+	// 		for _, err := range valid.Errors {
+	// 			beego.Trace("input params body check : " + i18n.Tr(global.Lang, "outputParams.DATAPARAMSILLEGAL") + err.Key + ":" + err.Message)
+	// 			result.CheckRes = nil
+	// 			result.RequestID = metaCheckResult.CheckRes["request-id"]
+	// 			result.Message = i18n.Tr(global.Lang, "outputParams.DATAPARAMSILLEGAL") + " " + err.Key + ":" + err.Message
+	// 			return result, errors.New(i18n.Tr(global.Lang, "outputParams.DATAPARAMSILLEGAL"))
+	// 		}
+	// 	}
+	// }
+	//
+	// //sign check
+	// err = sign.ValidSign(rawDataBody, beego.AppConfig.String("sign.secretKey"))
+	// if err != nil {
+	// 	result.CheckRes = nil
+	// 	result.RequestID = metaCheckResult.CheckRes["request-id"]
+	// 	result.Message = err.Error()
+	// 	// return result, err
+	// }
 
-	for _, val := range data {
-		is, err := valid.Valid(val)
-
-		//日志
-
-		//检查参数
-		if err != nil {
-			// handle error
-			beego.Trace(i18n.Tr(global.Lang, "outputParams.SYSTEMILLEGAL") + err.Error())
-		}
-
-		if !is {
-			for _, err := range valid.Errors {
-				beego.Trace("input params body check : " + i18n.Tr(global.Lang, "outputParams.DATAPARAMSILLEGAL") + err.Key + ":" + err.Message)
-				result.MetaCheckResult = nil
-				result.RequestID = metaCheckResult.MetaCheckResult["request-id"]
-				result.Message = i18n.Tr(global.Lang, "outputParams.DATAPARAMSILLEGAL") + " " + err.Key + ":" + err.Message
-				return result, errors.New(i18n.Tr(global.Lang, "outputParams.DATAPARAMSILLEGAL"))
-			}
-		}
-	}
-
-	//sign check
-	err = sign.ValidSign(rawDataBody, beego.AppConfig.String("sign.secretKey"))
-	if err != nil {
-		result.MetaCheckResult = nil
-		result.RequestID = metaCheckResult.MetaCheckResult["request-id"]
-		result.Message = err.Error()
-		// return result, err
-	}
-
-	return metaCheckResult, nil
+	return headerRes, nil
 }
 
+// func InputParamsCheck(meta map[string][]string, rawDataBody []byte, data ...interface{}) (result Result, err error) {
+// 	//MetaHeader check
+// 	metaCheckResult, err := MetaHeaderCheck(meta)
+// 	if err != nil {
+// 		return metaCheckResult, err
+// 	}
+//
+// 	//DataParams check
+// 	valid := validation.Validation{}
+//
+// 	for _, val := range data {
+// 		is, err := valid.Valid(val)
+//
+// 		//日志
+//
+// 		//检查参数
+// 		if err != nil {
+// 			// handle error
+// 			beego.Trace(i18n.Tr(global.Lang, "outputParams.SYSTEMILLEGAL") + err.Error())
+// 		}
+//
+// 		if !is {
+// 			for _, err := range valid.Errors {
+// 				beego.Trace("input params body check : " + i18n.Tr(global.Lang, "outputParams.DATAPARAMSILLEGAL") + err.Key + ":" + err.Message)
+// 				result.CheckRes = nil
+// 				result.RequestID = metaCheckResult.CheckRes["request-id"]
+// 				result.Message = i18n.Tr(global.Lang, "outputParams.DATAPARAMSILLEGAL") + " " + err.Key + ":" + err.Message
+// 				return result, errors.New(i18n.Tr(global.Lang, "outputParams.DATAPARAMSILLEGAL"))
+// 			}
+// 		}
+// 	}
+//
+// 	//sign check
+// 	err = sign.ValidSign(rawDataBody, beego.AppConfig.String("sign.secretKey"))
+// 	if err != nil {
+// 		result.CheckRes = nil
+// 		result.RequestID = metaCheckResult.CheckRes["request-id"]
+// 		result.Message = err.Error()
+// 		// return result, err
+// 	}
+//
+// 	return metaCheckResult, nil
+// }
+
 /**
- * meta参数验证
- * 1.map转json
- * 2.json转slice
- * 3.解析到struct
- * 4.将header 放入map 返回
+ * header参数验证
+ * 将header 放入map 返回
  *
  * @meta 	meta  map[string][]string 	header信息 map格式
  */
-func MetaHeaderCheck(meta map[string][]string) (result Result, err error) {
-	rawMetaHeader, _ := ffjson.Marshal(meta)
-	var metaHeader MetaHeader
-	ffjson.Unmarshal(rawMetaHeader, &metaHeader)
+func HeaderCheck(data map[string]interface{}) (result Result, err error) {
+	var h Header
+	ffjson.Unmarshal(data["header"].([]byte), &h)
 
-	//日志
-	fmt.Println("meta json解析:", metaHeader)
-	for key, val := range meta {
-		beego.Trace("meta analysis : " + key + ":" + val[0])
+	rid := GetRequestID()
+	if len(h.RequestID) > 0 && h.RequestID[0] != "" {
+		rid = h.RequestID[0]
+	}
+
+	result.CheckRes = nil
+	result.Message = ""
+	result.RequestID = rid
+
+	ct, err := HeaderParamCheck(h.ContentType, "Content-Type")
+	if err != nil {
+		ct.RequestID = rid
+		return ct, err
+	}
+
+	at, err := HeaderParamCheck(h.Accept, "Accept")
+	if err != nil {
+		at.RequestID = rid
+		return at, err
 	}
 
 	valid := validation.Validation{}
 
-	is, err := valid.Valid(&metaHeader)
+	is, err := valid.Valid(&h)
 
-	//日志
-
-	//Content-Type
-	if val, ok := meta["Content-Type"]; ok {
-		if val[0] != beego.AppConfig.String("Content-Type") {
-			result.MetaCheckResult = nil
-			result.Message = i18n.Tr(global.Lang, "outputParams.CONTENTTYPEILLEGAL")
-			if val, ok := meta["Request-Id"]; ok {
-				result.RequestID = val[0]
-				result.RequestID = GetRequestID()
-			}
-			return result, errors.New(i18n.Tr(global.Lang, "outputParams.CONTENTTYPEILLEGAL "))
-		}
-	}
-
-	//Accept
-	if val, ok := meta["Accept"]; ok {
-		if val[0] != beego.AppConfig.String("Accept") {
-			result.MetaCheckResult = nil
-			result.Message = i18n.Tr(global.Lang, "outputParams.ACCEPTILLEGAL")
-			if val, ok := meta["Request-Id"]; ok {
-				result.RequestID = val[0]
-			}
-			return result, errors.New(i18n.Tr(global.Lang, "outputParams.ACCEPTILLEGAL "))
-		}
-	}
-
-	//检查参数
 	if err != nil {
-		// handle error
-		beego.Trace(i18n.Tr(global.Lang, "outputParams.SYSTEMILLEGAL") + err.Error())
+		beego.Trace(
+			i18n.Tr(
+				global.Lang,
+				"outputParams.SYSTEMILLEGAL") + err.Error(),
+		)
+		result.Message = i18n.Tr(global.Lang, "outputParams.SYSTEMILLEGAL")
+
+		return result, err
 	}
 
 	if !is {
 		for _, err := range valid.Errors {
-			beego.Trace(i18n.Tr(global.Lang, "outputParams.METAPARAMSILLEGAL") + err.Key + ":" + err.Message)
-			result.MetaCheckResult = nil
-			result.Message = i18n.Tr(global.Lang, "outputParams.METAPARAMSILLEGAL") + " " + err.Key + ":" + err.Message
-			if val, ok := meta["request-id"]; ok {
-				result.RequestID = val[0]
-			}
-			return result, errors.New(i18n.Tr(global.Lang, "outputParams.METAPARAMSILLEGAL "))
+			beego.Trace(
+				i18n.Tr(
+					global.Lang,
+					"outputParams.METAPARAMSILLEGAL") + err.Key + ":" + err.Message)
+			result.Message = i18n.Tr(
+				global.Lang,
+				"outputParams.METAPARAMSILLEGAL") + " " + err.Key + ":" + err.Message
+
+			return result, errors.New(
+				i18n.Tr(
+					global.Lang,
+					"outputParams.METAPARAMSILLEGAL",
+				),
+			)
 		}
 	}
 
-	//把meta参数放入新的struct 返回
-	var metaMap = make(map[string]string)
-	for key, val := range meta {
-		metaMap[key] = val[0]
+	var headerMap = make(map[string]string)
+	for key, val := range data["headermap"].(http.Header) {
+		headerMap[key] = val[0]
 	}
+	headerMap["request-id"] = rid
+	result.CheckRes = headerMap
 
-	//日志
-	if len(metaMap["request-id"]) == 0 {
-		metaMap["request-id"] = GetRequestID()
+	return result, nil
+}
+
+//HeaderParamCheck 验证header固定信息
+func HeaderParamCheck(h []string, k string) (result Result, err error) {
+	if h[0] != beego.AppConfig.String(k) {
+		message := ""
+		switch k {
+		case "Content-Type":
+			message = i18n.Tr(
+				global.Lang,
+				"outputParams.CONTENTTYPEILLEGAL",
+			)
+		case "Accept":
+			message = i18n.Tr(
+				global.Lang,
+				"outputParams.ACCEPTILLEGAL",
+			)
+		}
+
+		result.CheckRes = nil
+		result.Message = message
+		return result, errors.New(message)
 	}
-
-	result.MetaCheckResult = metaMap
-	result.Message = ""
-	result.RequestID = ""
 
 	return result, nil
 }
