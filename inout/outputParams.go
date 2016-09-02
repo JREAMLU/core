@@ -74,13 +74,6 @@ type MetaList struct {
 	Timezone  string    `json:"timezone"`
 }
 
-/*
-type dataList struct {
-	Total int                    `json:"total"`
-	List  map[string]interface{} `json:"list"`
-}
-*/
-
 /**
  *	@auther		jream.lu
  *	@intro		出参成功
