@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"net/http"
 
 	"github.com/JREAMLU/core/global"
@@ -35,27 +34,28 @@ type Result struct {
 	Message   string
 }
 
+var Rid string
+
 func InputParams(r *context.Context) map[string]interface{} {
 	r.Request.ParseForm()
 
 	headerMap := r.Request.Header
-	id := []string{"123"}
-	headerMap["Request-Id"] = id
-	fmt.Println("-------", headerMap["Request-Id"][0])
+	if _, ok := headerMap["Request-Id"]; !ok {
+		rid := GetRequestID()
+		headerMap["Request-Id"] = []string{rid}
+	}
+	Rid = headerMap["Request-Id"][0]
 	header, _ := json.Marshal(headerMap)
-
 	body := r.Input.RequestBody
-
 	cookiesSlice := r.Request.Cookies()
 	cookies, _ := json.Marshal(cookiesSlice)
-
 	querystrMap := r.Request.Form
 	querystr, _ := json.Marshal(querystrMap)
 
-	beego.Trace("input params header" + string(header))
-	beego.Trace("input params body" + string(body))
-	beego.Trace("input params cookies" + string(cookies))
-	beego.Trace("input params querystr" + string(querystr))
+	beego.Trace(Rid + ":" + "input params header" + string(header))
+	beego.Trace(Rid + ":" + "input params body" + string(body))
+	beego.Trace(Rid + ":" + "input params cookies" + string(cookies))
+	beego.Trace(Rid + ":" + "input params querystr" + string(querystr))
 
 	data := make(map[string]interface{})
 	mu.Lock()
@@ -144,10 +144,7 @@ func HeaderCheck(data map[string]interface{}) (result Result, err error) {
 	var h Header
 	ffjson.Unmarshal(data["header"].([]byte), &h)
 
-	rid := GetRequestID()
-	if len(h.RequestID) > 0 && h.RequestID[0] != "" {
-		rid = h.RequestID[0]
-	}
+	rid := h.RequestID[0]
 
 	result.CheckRes = nil
 	result.Message = ""
