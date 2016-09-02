@@ -144,7 +144,7 @@ func HeaderCheck(data map[string]interface{}) (result Result, err error) {
 	var h Header
 	ffjson.Unmarshal(data["header"].([]byte), &h)
 
-	rid := h.RequestID[0]
+	rid := Rid
 
 	result.CheckRes = nil
 	result.Message = ""
