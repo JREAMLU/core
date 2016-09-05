@@ -6,23 +6,21 @@ import (
 	"gopkg.in/redis.v4"
 )
 
-var R *redis.Client
-
-func InitRedis(addr string, password string, db int) error {
-	R = redis.NewClient(&redis.Options{
+func InitRedis(addr string, password string, db int) (r *redis.Client, err error) {
+	r = redis.NewClient(&redis.Options{
 		Addr:     addr,
 		Password: password,
 		DB:       db,
 	})
 
-	pong, err := R.Ping().Result()
+	pong, err := r.Ping().Result()
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	if pong == "PONG" {
-		return nil
+		return r, nil
 	}
 
-	return errors.New(pong)
+	return r, errors.New(pong)
 }
