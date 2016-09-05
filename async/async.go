@@ -7,7 +7,7 @@ import (
 )
 
 type AddFunc struct {
-	Name    string
+	Logo    string
 	Handler interface{}
 	Params  []interface{}
 }
@@ -19,7 +19,7 @@ func GoAsyncRequest(addFunc []AddFunc, length int) (map[string][]interface{}, er
 	async := async.New()
 
 	for _, v := range addFunc {
-		async.Add(v.Name, v.Handler, v.Params...)
+		async.Add(v.Logo, v.Handler, v.Params...)
 	}
 
 	var res map[string][]interface{}
@@ -50,8 +50,8 @@ func request2() interface{} {
 
 func main() {
 	var addFunc MultiAddFunc
-	addFunc = append(addFunc, AddFunc{Name: "a", Handler: request1, Params: []interface{}{"a"}})
-	addFunc = append(addFunc, AddFunc{Name: "b", Handler: request2})
+	addFunc = append(addFunc, AddFunc{Logo: "a", Handler: request1, Params: []interface{}{"a"}})
+	addFunc = append(addFunc, AddFunc{Logo: "b", Handler: request2})
 
 	res, err := GoAsyncRequest(addFunc, 2)
 	fmt.Println(res, err)

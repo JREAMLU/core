@@ -20,10 +20,12 @@ func TestIp2Int(t *testing.T) {
 	})
 }
 
-func Benchmark_GoAsyncRequest(b *testing.B) {
-	for i := 0; i < b.N; i++ {
-		ip := "255.255.255.255"
-		ipInt := Ip2Int(ip)
-		Int2Ip(ipInt)
-	}
+func BenchmarkIp2Int(b *testing.B) {
+	Convey("bench Ip2Int()", b, func() {
+		for i := 0; i < b.N; i++ {
+			ip := "255.255.255.255"
+			ipInt := Ip2Int(ip)
+			Int2Ip(ipInt)
+		}
+	})
 }

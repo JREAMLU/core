@@ -21,7 +21,7 @@ func TestGoAsyncRequest(t *testing.T) {
 }
 
 //Benchmark_GoAsyncRequest go test -v -bench=".*"
-func Benchmark_GoAsyncRequest(b *testing.B) {
+func BenchmarkGoAsyncRequest(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		request()
 	}
@@ -32,7 +32,7 @@ func request() (map[string][]interface{}, error) {
 	addFunc = append(
 		addFunc,
 		AddFunc{
-			Name:    "a",
+			Logo:    "a",
 			Handler: requestA,
 			Params: []interface{}{
 				"str",
@@ -41,14 +41,14 @@ func request() (map[string][]interface{}, error) {
 	)
 	addFunc = append(
 		addFunc, AddFunc{
-			Name:    "b",
+			Logo:    "b",
 			Handler: requestB,
 		},
 	)
 	addFunc = append(
 		addFunc,
 		AddFunc{
-			Name:    "c",
+			Logo:    "c",
 			Handler: requestC,
 			Params: []interface{}{
 				3,

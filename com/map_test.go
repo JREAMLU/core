@@ -17,10 +17,12 @@ func TestMapMerge(t *testing.T) {
 	})
 }
 
-func Benchmark_MapMerge(b *testing.B) {
-	for i := 0; i < b.N; i++ {
-		mapmerge()
-	}
+func BenchmarkMapMerge(b *testing.B) {
+	Convey("bench MapMerge()", b, func() {
+		for i := 0; i < b.N; i++ {
+			mapmerge()
+		}
+	})
 }
 
 func mapmerge() map[string]interface{} {

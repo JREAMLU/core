@@ -82,7 +82,7 @@ type MetaList struct {
  *	@params		params ...interface{}	切片指针
  *	@return 	?
  */
-func OutputSuccess(data interface{}, requestID string) Output {
+func Suc(data interface{}, requestID string) Output {
 	var op Output
 	op.Meta.RequestId = requestID
 	op.Meta.UpdatedAt = time.Now()
@@ -97,7 +97,7 @@ func OutputSuccess(data interface{}, requestID string) Output {
 	return op
 }
 
-func OutputFail(msg interface{}, status string, requestID string) Output {
+func Fail(msg interface{}, status string, requestID string) Output {
 	var op Output
 	op.Meta.RequestId = requestID
 	op.Meta.UpdatedAt = time.Now()
