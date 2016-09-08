@@ -2,6 +2,7 @@ package com
 
 import (
 	"github.com/JREAMLU/core/useragent"
+	"github.com/davecgh/go-spew/spew"
 	"github.com/mssola/user_agent"
 )
 
@@ -31,20 +32,21 @@ func ParseUserAgent_(ual string) map[string]interface{} {
 func ParseUserAgent(ual string) map[string]interface{} {
 	res := make(map[string]interface{})
 	agent := useragent.ParseByString(ual)
-	bot := 0
-	mobile := 0
+	spew.Dump(agent)
+	bot := false
+	mobile := false
 
 	if agent.Type == "robot" {
-		bot = 1
+		bot = true
 	}
 
 	if agent.Device.Type == "mobile" {
-		mobile = 1
+		mobile = true
 	}
 
 	mu.Lock()
 	res["browser_name"] = agent.Client["name"]
-	res["engine_version"] = agent.Client["version"]
+	res["browser_version"] = agent.Client["version"]
 	res["platform"] = agent.OS.Name
 	res["os"] = agent.OS.Version
 	res["bot"] = bot
