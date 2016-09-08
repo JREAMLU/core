@@ -1,8 +1,11 @@
 package com
 
-import "github.com/mssola/user_agent"
+import (
+	"github.com/JREAMLU/core/useragent"
+	"github.com/mssola/user_agent"
+)
 
-func ParseUserAgent(ual string) map[string]interface{} {
+func ParseUserAgent_(ual string) map[string]interface{} {
 	res := make(map[string]interface{})
 	ua := user_agent.New(ual)
 
@@ -20,6 +23,32 @@ func ParseUserAgent(ual string) map[string]interface{} {
 	res["engine_version"] = eversion
 	res["browser_name"] = bname
 	res["browser_version"] = bversion
+	mu.Unlock()
+
+	return res
+}
+
+func ParseUserAgent(ual string) map[string]interface{} {
+	res := make(map[string]interface{})
+	agent := useragent.ParseByString(ual)
+	bot := 0
+	mobile := 0
+
+	if agent.Type == "robot" {
+		bot = 1
+	}
+
+	if agent.Device.Type == "mobile" {
+		mobile = 1
+	}
+
+	mu.Lock()
+	res["browser_name"] = agent.Client["name"]
+	res["engine_version"] = agent.Client["version"]
+	res["platform"] = agent.OS.Name
+	res["os"] = agent.OS.Version
+	res["bot"] = bot
+	res["mobile"] = mobile
 	mu.Unlock()
 
 	return res
