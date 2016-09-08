@@ -22,9 +22,11 @@ func TestGoAsyncRequest(t *testing.T) {
 
 //Benchmark_GoAsyncRequest go test -v -bench=".*"
 func BenchmarkGoAsyncRequest(b *testing.B) {
-	for i := 0; i < b.N; i++ {
-		request()
-	}
+	Convey("bench GoAsyncRequest()", b, func() {
+		for i := 0; i < b.N; i++ {
+			request()
+		}
+	})
 }
 
 func request() (map[string][]interface{}, error) {
