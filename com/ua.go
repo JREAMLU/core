@@ -1,8 +1,8 @@
 package com
 
 import (
+	"github.com/JREAMLU/core/user_agent"
 	"github.com/JREAMLU/core/useragent"
-	"github.com/mssola/user_agent"
 )
 
 func ParseUserAgent_(ual string) map[string]interface{} {
