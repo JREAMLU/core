@@ -1,0 +1,18 @@
+redisConfig:  
+    - name: cache
+      poolSize: 1
+      connect:
+          - ip: 172.16.9.221:6391
+            db: 0
+            master: true
+        
+          - ip: 172.16.9.230:6391
+            db: 0
+            master: true
+
+    - name: feed
+      poolSize: 1
+      connect:
+          - ip: 172.16.9.221:6391
+            db: 0
+            master: true
