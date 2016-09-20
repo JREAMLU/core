@@ -77,11 +77,16 @@ func (p *UserAgent) detectBrowser(sections []section) {
 					} else if len(sections) > 4 && sections[4].name == "LBBROWSER" {
 						p.browser.Name = "liebao"
 						p.browser.Version = sections[4].version
-					} else if len(sections) > 2 && sections[2].name == "Chrome" {
-						p.browser.Name = "Chrome"
 					} else if len(sections) > 3 && sections[3].name == "MQQBrowser" {
 						p.browser.Name = "QQbrowser mobile"
 						p.browser.Version = sections[3].version
+					} else if len(sections) > 7 && sections[7].name == "WindVane" {
+						p.browser.Name = "AliApp"
+					} else if (len(sections) > 3 && sections[3].name == "UBrowser") || (len(sections) > 3 && sections[3].name == "UCBrowser") {
+						p.browser.Name = "UC"
+						p.browser.Version = sections[3].version
+					} else if len(sections) > 2 && sections[2].name == "Chrome" {
+						p.browser.Name = "Chrome"
 					} else {
 						p.browser.Name = "Safari"
 					}
