@@ -50,22 +50,25 @@ func InputParams(r *context.Context) map[string]interface{} {
 	cookiesSlice := r.Request.Cookies()
 	cookies, _ := json.Marshal(cookiesSlice)
 	querystrMap := r.Request.Form
-	querystr, _ := json.Marshal(querystrMap)
+	querystrJson, _ := json.Marshal(querystrMap)
+	querystring := r.Request.RequestURI
 
 	beego.Trace(Rid + ":" + "input params header" + string(header))
 	beego.Trace(Rid + ":" + "input params body" + string(body))
 	beego.Trace(Rid + ":" + "input params cookies" + string(cookies))
-	beego.Trace(Rid + ":" + "input params querystr" + string(querystr))
+	beego.Trace(Rid + ":" + "input params querystrJson" + string(querystrJson))
+	beego.Trace(Rid + ":" + "input params querystring" + string(querystring))
 
 	data := make(map[string]interface{})
 	mu.Lock()
 	data["header"] = header
 	data["body"] = body
-	data["cookies"] = cookies
-	data["querystr"] = querystr
+	data["cookies"] = string(cookies)
+	data["querystrjson"] = string(querystrJson)
 	data["headermap"] = headerMap
 	data["cookiesslice"] = cookiesSlice
 	data["querystrmap"] = querystrMap
+	data["querystring"] = querystring
 	mu.Unlock()
 
 	return data
