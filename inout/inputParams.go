@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"net/http"
+	"strconv"
 
 	"github.com/JREAMLU/core/global"
 	"github.com/JREAMLU/core/guid"
@@ -24,7 +25,8 @@ type Header struct {
 	RequestID   []string `json:"Request-Id" valid:"Required"`
 	ContentType []string `json:"Content-Type" valid:"Required"`
 	Accept      []string `json:"Accept" valid:"Required"`
-	Token       []string `json:"Token" `
+	Token       []string `json:"Token" valid:"Required"`
+	Timestamp   []string `json:"Timestamp" valid:"Required"`
 	IP          []string `json:"Ip" valid:"Required"`
 }
 
@@ -86,6 +88,8 @@ func InputParams(r *context.Context) map[string]interface{} {
  */
 func InputParamsCheck(data map[string]interface{}, stdata ...interface{}) (result Result, err error) {
 	headerRes, err := HeaderCheck(data)
+	timestamp, _ := strconv.ParseInt(headerRes.CheckRes["Timestamp"], 10, 64)
+	token := headerRes.CheckRes["Token"]
 	if err != nil {
 		return headerRes, err
 	}
@@ -127,7 +131,7 @@ func InputParamsCheck(data map[string]interface{}, stdata ...interface{}) (resul
 
 	//sign check
 	if is, _ := beego.AppConfig.Bool("sign.onOff"); is {
-		err = sign.ValidSign(data["body"].([]byte), beego.AppConfig.String("sign.secretKey"))
+		err = sign.ValidSignT(data["body"].([]byte), token, timestamp, beego.AppConfig.String("sign.secretKey"))
 		if err != nil {
 			result.Message = err.Error()
 			return result, err
