@@ -129,7 +129,6 @@ func InputParamsCheck(data map[string]interface{}, stdata ...interface{}) (resul
 		}
 	}
 
-	//sign check
 	if is, _ := beego.AppConfig.Bool("sign.onOff"); is {
 		err = sign.ValidSignT(data["body"].([]byte), token, timestamp, beego.AppConfig.String("sign.secretKey"))
 		if err != nil {

@@ -77,7 +77,6 @@ func Serialize(data interface{}) interface{} {
 
 //VaildSignT 签名验证
 func ValidSignT(requestData []byte, sign string, timestamp int64, secretKey string) error {
-	//取出sign Timestamp
 	var rdata map[string]interface{}
 	json.Unmarshal(requestData, &rdata)
 
@@ -86,16 +85,13 @@ func ValidSignT(requestData []byte, sign string, timestamp int64, secretKey stri
 		return err
 	}
 
-	//生成签名
 	signed := GenerateSign(jsonData, timestamp, secretKey)
 
-	//对比sign
 	if sign != signed {
 		beego.Trace("sign: ", sign, "==", signed)
 		return errors.New(i18n.Tr(global.Lang, "sign.INVALIDSIGNATURE"))
 	}
 
-	//时间是否合理
 	expire, _ := beego.AppConfig.Int64("sign.expire")
 	if diff := time.Now().Unix() - timestamp; diff > expire {
 		return errors.New(i18n.Tr(global.Lang, "sign.SIGNATURETIMEEXPIRED"))
