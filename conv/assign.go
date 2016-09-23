@@ -40,3 +40,15 @@ func SthToMap(sth map[string][]string) map[string]interface{} {
 	}
 	return sths
 }
+
+func SthsToInt64(sth map[string]interface{}) map[string]interface{} {
+	var sths = make(map[string]interface{})
+	for k, v := range sth {
+		switch v.(type) {
+		case float64:
+			v = int64(v.(float64))
+		}
+		sths[k] = v
+	}
+	return sths
+}
