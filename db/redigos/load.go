@@ -3,8 +3,10 @@ package redigos
 import (
 	"errors"
 	"fmt"
+	"time"
 
 	"github.com/JREAMLU/core/io"
+	"github.com/garyburd/redigo/redis"
 
 	yaml "gopkg.in/yaml.v2"
 )
@@ -27,7 +29,7 @@ type RedisConfig struct {
 
 type Connect struct {
 	IP     string `yaml:"ip"`
-	Db     int    `yaml:"db"`
+	DB     string `yaml:"db"`
 	Master bool   `yaml:"master"`
 }
 
@@ -51,6 +53,25 @@ func LoadRedisConfig(filePath string) error {
 	}
 
 	return nil
+}
+
+func GetRedisConn(server string, isMaster bool) *Connect {
+	if conf, ok := redisConf[server]; ok {
+		for i := range conf.Connects {
+			if conf.Connects[i].Master == isMaster {
+				return &conf.Connects[i]
+			}
+		}
+	}
+	return nil
+}
+
+func GetRedisClient(server string, isMaster bool) redis.Conn {
+	conn := GetRedisConn(server, isMaster)
+	if conn == nil {
+		return nil
+	}
+	return GetRedisPool(conn.IP, conn.DB, 50, 240*time.Second).Get()
 }
 
 func redisConfNotExists(server string, isMaster bool) error {

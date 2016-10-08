@@ -108,7 +108,7 @@ func getRedisPool(addr, db string) (pool *redis.Pool) {
 		pool = p.Get(db)
 	}
 	poolLock.RUnlock()
-	return
+	return nil
 }
 
 func registerRedisPool(addr string, maxIdle int, idleTimeout time.Duration) *RedisPool {
