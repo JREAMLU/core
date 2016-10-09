@@ -49,6 +49,7 @@ func TestInsert(t *testing.T) {
 }
 
 func BenchmarkInsert(b *testing.B) {
+	LoadRedisConfig("./redis.yml")
 	conn := GetRedisClient(serverName, true)
 	key := fmt.Sprintf("zgo:%v", "n1")
 	defer conn.Close()
@@ -62,6 +63,7 @@ func BenchmarkInsert(b *testing.B) {
 }
 
 func insert(str string) (int64, error) {
+	LoadRedisConfig("./redis.yml")
 	conn := GetRedisClient(serverName, true)
 	key := fmt.Sprintf("zgo:%v", "n1")
 	reply, err := redis.Int64(conn.Do("SADD", key, str))

@@ -230,11 +230,11 @@ func (rs *RedisStructure) Keys(pattern string) ([]string, error) {
 
 func (rs *RedisStructure) DelKey(keySuffix string) (bool, error) {
 	key := rs.InitRedisKey(keySuffix)
-	n, err := rs.Int(true, "DEL", key)
+	reply, err := rs.Int(true, "DEL", key)
 	if err != nil {
 		return false, err
 	}
-	return n > 0, nil
+	return reply > 0, nil
 }
 
 func (rs *RedisStructure) getConnstr(isMaster bool) string {
@@ -285,4 +285,31 @@ func (rs *RedisStructure) Exists(key string) (bool, error) {
 func (rs *RedisStructure) Rename(keySuffix, newKey string) (string, error) {
 	key := rs.InitRedisKey(keySuffix)
 	return rs.String(true, "RENAME", key, newKey)
+}
+
+func (rs *RedisStructure) Expire(keySuffix string, second int) (bool, error) {
+	key := rs.InitRedisKey(keySuffix)
+	reply, err := rs.Int(true, "EXPIRE", key, second)
+	return reply > 0, err
+}
+
+func (rs *RedisStructure) TTL(keySuffix string) (int, error) {
+	key := rs.InitRedisKey(keySuffix)
+	return rs.Int(false, "TTL", key)
+}
+
+func (rs *RedisStructure) MultiExec(isMaster bool, cmds [][]interface{}) ([]interface{}, error) {
+	conn := rs.getConn(isMaster)
+	if conn == nil {
+		return nil, redisConfNotExists(rs.ServerName, isMaster)
+	}
+	defer conn.Close()
+	conn.Send("Multi")
+	for _, cmd := range cmds {
+		err := conn.Send(cmd[0].(string), cmd[1:]...)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return redis.MultiBulk(conn.Do("EXEC"))
 }
