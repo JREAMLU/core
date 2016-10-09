@@ -5,10 +5,10 @@ redisConfig:
           - ip: 172.16.9.221:6391
             db: 0
             master: true
-        
+
           - ip: 172.16.9.230:6391
             db: 0
-            master: true
+            master: false
 
     - name: feed
       poolSize: 1
@@ -16,3 +16,7 @@ redisConfig:
           - ip: 172.16.9.221:6391
             db: 0
             master: true
+
+          - ip: 172.16.9.230:6391
+            db: 0
+            master: false

@@ -52,7 +52,7 @@ func (this *BaseController) Prepare() {
 	for _, lang := range langs {
 		beego.Trace("Loading language: " + lang)
 		if err := i18n.SetMessage(lang, "lang/"+"locale_"+lang+".ini"); err != nil {
-			beego.Error("Fail to set message file: " + err.Error())
+			beego.Trace("Fail to set message file: " + err.Error())
 			return
 		}
 	}
