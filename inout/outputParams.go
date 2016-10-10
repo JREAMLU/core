@@ -24,7 +24,7 @@ const (
 	CREATED                       = 201 //请求执行成功，资源已创建完毕
 	ACCEPTED                      = 202 //请求已接受，但服务器可能尚未处理
 	NON_AUTHORITATIVE_INFORMATION = 203 //服务器返回的信息并非来自原始资源，而是来自第三方或者原始资源的子集
-	NO_CONTENT                    = 204 //请求执行成功，但是想要没有内容尸体
+	NO_CONTENT                    = 204 //请求执行成功，但是想要没有内容实体
 	PARTIAL_CONTENT               = 206 //服务器已经成功处理了部分GET请求
 	MOVED_PERMANENTLY             = 301 //请求的URL已移走，Respone中应该包含一个新的URI，锁门资源现在所处的位置，客户端之后的请求都应该访问新的URI
 	FOUND                         = 302 //与状态码301不同的是，这里的资源移除是临时的，客户端以后的资源请求仍然使用原始的URI
