@@ -32,7 +32,7 @@ var (
 )
 
 type Redirect struct {
-	Id          uint64 `gorm:"primary_key;column:redirect_id"`
+	ID          uint64 `gorm:"primary_key;column:redirect_id"`
 	LongUrl     string `gorm:"column:long_url"`
 	ShortUrl    string `gorm:"column:short_url"`
 	LongCrc     uint64 `gorm:"column:long_crc"`
@@ -150,7 +150,7 @@ func insert(r Redirect) (uint64, error) {
 	if res.Error != nil {
 		return 0, res.Error
 	}
-	return r.Id, nil
+	return r.ID, nil
 }
 
 func update(r Redirect, id []uint64) error {

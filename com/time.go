@@ -45,7 +45,6 @@ func TicksToTime(ticks int64) time.Time {
 
 func TimeToTicks(t time.Time) int64 {
 	return t.AddDate(1969, 0, 0).Unix() * 10000000
-
 }
 
 //TicksToUnixNano c#中的时间Ticks转成UnixNano
