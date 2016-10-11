@@ -14,15 +14,15 @@ type GormConf struct {
 
 var X *gorm.DB
 
-func (gc *GormConf) InitGorm() error {
+//"root:root@tcp(localhost:3306)/plucron?charset=utf8&parseTime=True&loc=Local"
+func (gconf *GormConf) InitGorm() error {
 	var err error
-	//"root:root@tcp(localhost:3306)/plucron?charset=utf8&parseTime=True&loc=Local"
-	X, err = gorm.Open(gc.Driver, gc.Setting)
+	X, err = gorm.Open(gconf.Driver, gconf.Setting)
 	if err != nil {
 		return err
 	}
-	X.SingularTable(gc.SingularTable)
-	X.LogMode(gc.LogMode)
+	X.SingularTable(gconf.SingularTable)
+	X.LogMode(gconf.LogMode)
 	return nil
 }
 

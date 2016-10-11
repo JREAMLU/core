@@ -8,20 +8,20 @@ import (
 
 /*
 CREATE TABLE `redirect` (
-  `redirect_id` int(11) unsigned NOT NULL AUTO_INCREMENT COMMENT '短网址唯一id,自增长',
-  `long_url` varchar(255) NOT NULL DEFAULT '' COMMENT '原始url',
-  `short_url` char(25) NOT NULL DEFAULT '' COMMENT '短url',
-  `long_crc` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '原始url crc',
-  `short_crc` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '短url crc',
-  `status` tinyint(4) unsigned NOT NULL DEFAULT '0' COMMENT '状态 0:删除 1:正常',
-  `created_by_ip` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '创建者ip',
-  `updated_by_ip` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '更新者ip',
-  `created_at` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '创建时间timestamp',
-  `updated_at` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '更新时间timestamp',
-  PRIMARY KEY (`redirect_id`),
-  KEY `long_crc` (`long_crc`),
-  KEY `short_url` (`short_url`)
-) ENGINE=InnoDB AUTO_INCREMENT=4208 DEFAULT CHARSET=utf8 COMMENT='短网址表'
+    `redirect_id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT "短网址唯一id,自增长",
+    `long_url` VARCHAR(255) NOT NULL DEFAULT "" COMMENT "原始url|JREAMLU|2016-10-10",
+    `short_url` CHAR(25) NOT NULL DEFAULT "" COMMENT "短url|JREAMLU|2016-10-10",
+    `long_crc` INT(11) UNSIGNED NOT NULL DEFAULT 0 COMMENT "原始url crc|JREAMLU|2016-10-10",
+    `short_crc` INT(11) UNSIGNED NOT NULL DEFAULT 0 COMMENT "短url crc|JREAMLU|2016-10-10",
+    `status` TINYINT(4) UNSIGNED NOT NULL DEFAULT 0 COMMENT "状态 0:删除 1:正常|JREAMLU|2016-10-10",
+    `created_by_ip` INT(11) UNSIGNED NOT NULL DEFAULT 0 COMMENT "创建者ip|JREAMLU|2016-10-10",
+    `updated_by_ip` INT(11) UNSIGNED NOT NULL DEFAULT 0 COMMENT "更新者ip|JREAMLU|2016-10-10",
+    `created_at` INT(11) UNSIGNED NOT NULL DEFAULT 0 COMMENT "创建时间timestamp|JREAMLU|2016-10-10",
+    `updated_at` INT(11) UNSIGNED NOT NULL DEFAULT 0 COMMENT "更新时间timestamp|JREAMLU|2016-10-10",
+    PRIMARY KEY (`redirect_id`),
+    KEY `long_crc` (`long_crc`),
+    KEY `short_url` (`short_url`)
+) ENGINE = INNODB DEFAULT CHARSET=utf8 COMMENT="基建|短网址表|JREAMLU|2016-10-10";
 */
 
 var (
