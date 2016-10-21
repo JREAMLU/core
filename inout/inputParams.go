@@ -38,9 +38,9 @@ type Result struct {
 	Message   string
 }
 
-var Jctx jcontext.Context
+// var Jctx jcontext.Context
 
-func InputParams(r *context.Context) map[string]interface{} {
+func InputParams(r *context.Context) (map[string]interface{}, jcontext.Context) {
 	r.Request.ParseForm()
 
 	headerMap := r.Request.Header
@@ -48,7 +48,7 @@ func InputParams(r *context.Context) map[string]interface{} {
 		rid := GetRequestID()
 		headerMap["Request-Id"] = []string{rid}
 	}
-	Jctx = jcontext.WithValue(jcontext.Background(), "requestID", headerMap["Request-Id"][0])
+	jctx := jcontext.WithValue(jcontext.Background(), "requestID", headerMap["Request-Id"][0])
 	header, _ := json.Marshal(headerMap)
 	body := r.Input.RequestBody
 	cookiesSlice := r.Request.Cookies()
@@ -57,11 +57,11 @@ func InputParams(r *context.Context) map[string]interface{} {
 	querystrJson, _ := json.Marshal(querystrMap)
 	querystring := r.Request.RequestURI
 
-	beego.Trace(Jctx.Value("requestID").(string) + ":" + "input params header" + string(header))
-	beego.Trace(Jctx.Value("requestID").(string) + ":" + "input params body" + string(body))
-	beego.Trace(Jctx.Value("requestID").(string) + ":" + "input params cookies" + string(cookies))
-	beego.Trace(Jctx.Value("requestID").(string) + ":" + "input params querystrJson" + string(querystrJson))
-	beego.Trace(Jctx.Value("requestID").(string) + ":" + "input params querystring" + string(querystring))
+	beego.Trace(jctx.Value("requestID").(string) + ":" + "input params header" + string(header))
+	beego.Trace(jctx.Value("requestID").(string) + ":" + "input params body" + string(body))
+	beego.Trace(jctx.Value("requestID").(string) + ":" + "input params cookies" + string(cookies))
+	beego.Trace(jctx.Value("requestID").(string) + ":" + "input params querystrJson" + string(querystrJson))
+	beego.Trace(jctx.Value("requestID").(string) + ":" + "input params querystring" + string(querystring))
 
 	data := make(map[string]interface{})
 	mu.Lock()
@@ -75,7 +75,7 @@ func InputParams(r *context.Context) map[string]interface{} {
 	data["querystring"] = querystring
 	mu.Unlock()
 
-	return data
+	return data, jctx
 }
 
 /**
@@ -88,8 +88,8 @@ func InputParams(r *context.Context) map[string]interface{} {
  *	@data		data ...interface{}	切片指针	rawDataBody
  *	@return 	返回 true, metaMap, error
  */
-func InputParamsCheck(data map[string]interface{}, stdata ...interface{}) (result Result, err error) {
-	headerRes, err := HeaderCheck(data)
+func InputParamsCheck(jctx jcontext.Context, data map[string]interface{}, stdata ...interface{}) (result Result, err error) {
+	headerRes, err := HeaderCheck(jctx, data)
 	timestamp, _ := strconv.ParseInt(headerRes.CheckRes["Timestamp"], 10, 64)
 	token := headerRes.CheckRes["Token"]
 	if err != nil {
@@ -148,23 +148,23 @@ func InputParamsCheck(data map[string]interface{}, stdata ...interface{}) (resul
  *
  * @meta 	meta  map[string][]string 	header信息 map格式
  */
-func HeaderCheck(data map[string]interface{}) (result Result, err error) {
+func HeaderCheck(jctx jcontext.Context, data map[string]interface{}) (result Result, err error) {
 	var h Header
 	ffjson.Unmarshal(data["header"].([]byte), &h)
 
 	result.CheckRes = nil
 	result.Message = ""
-	result.RequestID = Jctx.Value("requestID").(string)
+	result.RequestID = jctx.Value("requestID").(string)
 
 	ct, err := HeaderParamCheck(h.ContentType, "Content-Type")
 	if err != nil {
-		ct.RequestID = Jctx.Value("requestID").(string)
+		ct.RequestID = jctx.Value("requestID").(string)
 		return ct, err
 	}
 
 	at, err := HeaderParamCheck(h.Accept, "Accept")
 	if err != nil {
-		at.RequestID = Jctx.Value("requestID").(string)
+		at.RequestID = jctx.Value("requestID").(string)
 		return at, err
 	}
 
@@ -206,7 +206,7 @@ func HeaderCheck(data map[string]interface{}) (result Result, err error) {
 	for key, val := range data["headermap"].(http.Header) {
 		headerMap[key] = val[0]
 	}
-	headerMap["request-id"] = Jctx.Value("requestID").(string)
+	headerMap["request-id"] = jctx.Value("requestID").(string)
 	result.CheckRes = headerMap
 
 	return result, nil
