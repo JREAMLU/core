@@ -9,6 +9,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/JREAMLU/core/com"
 	"github.com/JREAMLU/core/global"
 	"github.com/JREAMLU/core/guid"
 	"github.com/JREAMLU/core/sign"
@@ -57,11 +58,11 @@ func InputParams(r *context.Context) (map[string]interface{}, jcontext.Context) 
 	querystrJson, _ := json.Marshal(querystrMap)
 	querystring := r.Request.RequestURI
 
-	beego.Trace(jctx.Value("requestID").(string) + ":" + "input params header" + string(header))
-	beego.Trace(jctx.Value("requestID").(string) + ":" + "input params body" + string(body))
-	beego.Trace(jctx.Value("requestID").(string) + ":" + "input params cookies" + string(cookies))
-	beego.Trace(jctx.Value("requestID").(string) + ":" + "input params querystrJson" + string(querystrJson))
-	beego.Trace(jctx.Value("requestID").(string) + ":" + "input params querystring" + string(querystring))
+	beego.Trace(jctx.Value("requestID").(string), ":", "input params header", string(header))
+	beego.Trace(jctx.Value("requestID").(string), ":", "input params body", string(body))
+	beego.Trace(jctx.Value("requestID").(string), ":", "input params cookies", string(cookies))
+	beego.Trace(jctx.Value("requestID").(string), ":", "input params querystrJson", string(querystrJson))
+	beego.Trace(jctx.Value("requestID").(string), ":", "input params querystring", string(querystring))
 
 	data := make(map[string]interface{})
 	mu.Lock()
@@ -106,26 +107,25 @@ func InputParamsCheck(jctx jcontext.Context, data map[string]interface{}, stdata
 		is, err := valid.Valid(val)
 		if err != nil {
 			beego.Trace(
-				i18n.Tr(
-					global.Lang,
-					"outputParams.SYSTEMILLEGAL") + err.Error(),
+				jctx.Value("requestID").(string), ":",
+				i18n.Tr(global.Lang, "outputParams.SYSTEMILLEGAL"),
+				err.Error(),
 			)
 			result.Message = i18n.Tr(global.Lang, "outputParams.SYSTEMILLEGAL")
-
 			return result, err
-
 		}
 
 		if !is {
 			for _, err := range valid.Errors {
 				beego.Trace(
-					i18n.Tr(
-						global.Lang,
-						"outputParams.DATAPARAMSILLEGAL") + err.Key + ":" + err.Message)
-				result.Message = i18n.Tr(
-					global.Lang,
-					"outputParams.DATAPARAMSILLEGAL") + " " + err.Key + ":" + err.Message
-
+					jctx.Value("requestID").(string), ":",
+					i18n.Tr(global.Lang, "outputParams.DATAPARAMSILLEGAL"),
+					err.Key, ":", err.Message,
+				)
+				result.Message = com.StringJoin(
+					i18n.Tr(global.Lang, "outputParams.DATAPARAMSILLEGAL"),
+					" ", err.Key, ":", err.Message,
+				)
 				return result, errors.New(i18n.Tr(global.Lang, "outputParams.DATAPARAMSILLEGAL"))
 			}
 		}
@@ -174,9 +174,9 @@ func HeaderCheck(jctx jcontext.Context, data map[string]interface{}) (result Res
 
 	if err != nil {
 		beego.Trace(
-			i18n.Tr(
-				global.Lang,
-				"outputParams.SYSTEMILLEGAL") + err.Error(),
+			jctx.Value("requestID").(string), ":",
+			i18n.Tr(global.Lang, "outputParams.SYSTEMILLEGAL"),
+			err.Error(),
 		)
 		result.Message = i18n.Tr(global.Lang, "outputParams.SYSTEMILLEGAL")
 
@@ -186,19 +186,17 @@ func HeaderCheck(jctx jcontext.Context, data map[string]interface{}) (result Res
 	if !is {
 		for _, err := range valid.Errors {
 			beego.Trace(
-				i18n.Tr(
-					global.Lang,
-					"outputParams.METAPARAMSILLEGAL") + err.Key + ":" + err.Message)
-			result.Message = i18n.Tr(
-				global.Lang,
-				"outputParams.METAPARAMSILLEGAL") + " " + err.Key + ":" + err.Message
-
-			return result, errors.New(
-				i18n.Tr(
-					global.Lang,
-					"outputParams.METAPARAMSILLEGAL",
-				),
+				jctx.Value("requestID").(string), ":",
+				i18n.Tr(global.Lang, "outputParams.METAPARAMSILLEGAL"),
+				err.Key, ":", err.Message,
 			)
+
+			result.Message = com.StringJoin(
+				i18n.Tr(global.Lang, "outputParams.METAPARAMSILLEGAL"),
+				" ", err.Key, ":", err.Message,
+			)
+
+			return result, errors.New(i18n.Tr(global.Lang, "outputParams.METAPARAMSILLEGAL"))
 		}
 	}
 
@@ -218,15 +216,9 @@ func HeaderParamCheck(h []string, k string) (result Result, err error) {
 		message := ""
 		switch k {
 		case "Content-Type":
-			message = i18n.Tr(
-				global.Lang,
-				"outputParams.CONTENTTYPEILLEGAL",
-			)
+			message = i18n.Tr(global.Lang, "outputParams.CONTENTTYPEILLEGAL")
 		case "Accept":
-			message = i18n.Tr(
-				global.Lang,
-				"outputParams.ACCEPTILLEGAL",
-			)
+			message = i18n.Tr(global.Lang, "outputParams.ACCEPTILLEGAL")
 		}
 
 		result.CheckRes = nil
