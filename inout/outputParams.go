@@ -46,9 +46,7 @@ func Suc(data interface{}, requestID string) Output {
 	op.Meta.Timezone = beego.AppConfig.String("Timezone")
 
 	op.StatusCode = SUCCESS
-
 	op.Message = i18n.Tr(global.Lang, "outputParams.SUCCESS")
-
 	op.Data = data
 
 	return op
@@ -74,7 +72,6 @@ func Fail(msg interface{}, status string, requestID string) Output {
 	}
 
 	op.Message = msg
-
 	op.Data = make(map[string]interface{})
 
 	return op

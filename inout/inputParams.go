@@ -112,6 +112,7 @@ func InputParamsCheck(jctx jcontext.Context, data map[string]interface{}, stdata
 				err.Error(),
 			)
 			result.Message = i18n.Tr(global.Lang, "outputParams.SYSTEMILLEGAL")
+
 			return result, err
 		}
 
@@ -126,6 +127,7 @@ func InputParamsCheck(jctx jcontext.Context, data map[string]interface{}, stdata
 					i18n.Tr(global.Lang, "outputParams.DATAPARAMSILLEGAL"),
 					" ", err.Key, ":", err.Message,
 				)
+
 				return result, errors.New(i18n.Tr(global.Lang, "outputParams.DATAPARAMSILLEGAL"))
 			}
 		}
@@ -179,7 +181,6 @@ func HeaderCheck(jctx jcontext.Context, data map[string]interface{}) (result Res
 			err.Error(),
 		)
 		result.Message = i18n.Tr(global.Lang, "outputParams.SYSTEMILLEGAL")
-
 		return result, err
 	}
 
@@ -223,6 +224,7 @@ func HeaderParamCheck(h []string, k string) (result Result, err error) {
 
 		result.CheckRes = nil
 		result.Message = message
+
 		return result, errors.New(message)
 	}
 
@@ -235,5 +237,6 @@ func GetRequestID() string {
 	requestID.WriteString(beego.AppConfig.String("appname"))
 	requestID.WriteString("-")
 	requestID.WriteString(guid.NewObjectId().Hex())
+
 	return requestID.String()
 }
