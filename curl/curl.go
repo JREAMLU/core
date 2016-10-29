@@ -8,18 +8,26 @@ import (
 )
 
 type Requests struct {
-	Method string
-	UrlStr string
-	Header map[string]string
-	Raw    string
+	Method     string
+	UrlStr     string
+	Header     map[string]string
+	Raw        string
+	RetryTimes int64
+	Timeout    int64
+}
+
+func init() {
+	r := new(Requests)
+	r.RetryTimes = 1
+	r.Timeout = 15
 }
 
 //RollingCurl http请求url
 func RollingCurl(r Requests) (string, error) {
-	i := 0
+	var i int64 = 0
 RELOAD:
 	client := &http.Client{
-		Timeout: 15 * time.Second,
+		Timeout: time.Duration(r.Timeout) * time.Second,
 	}
 
 	req, err := http.NewRequest(
@@ -39,7 +47,7 @@ RELOAD:
 	resp, err := client.Do(req)
 	if err != nil {
 		i++
-		if i < 3 {
+		if i < r.RetryTimes {
 			goto RELOAD
 		}
 		return "", err
