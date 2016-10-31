@@ -24,6 +24,7 @@ type RedisLoads struct {
 type RedisConfig struct {
 	Name     string    `yaml:"name"`
 	PoolSize int       `yaml:"poolSize"`
+	TimeOut  int       `yaml:"timeOut"`
 	Connects []Connect `yaml:"connect"`
 }
 
@@ -71,7 +72,12 @@ func GetRedisClient(server string, isMaster bool) redis.Conn {
 	if conn == nil {
 		return nil
 	}
-	return GetRedisPool(conn.IP, conn.DB, 50, 240*time.Second).Get()
+	return GetRedisPool(
+		conn.IP,
+		conn.DB,
+		redisConf[server].PoolSize,
+		time.Duration(redisConf[server].TimeOut)*time.Second,
+	).Get()
 }
 
 func redisConfNotExists(server string, isMaster bool) error {

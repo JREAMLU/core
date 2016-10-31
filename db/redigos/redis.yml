@@ -1,6 +1,7 @@
 redisConfig:  
     - name: cache
-      poolSize: 1
+      poolSize: 50
+      timeOut: 240
       connect:
           - ip: 172.16.9.221:6391
             db: 0
@@ -11,7 +12,8 @@ redisConfig:
             master: false
 
     - name: feed
-      poolSize: 1
+      poolSize: 50
+      timeOut: 240
       connect:
           - ip: 172.16.9.221:6391
             db: 0
