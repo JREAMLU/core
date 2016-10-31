@@ -1,7 +1,6 @@
 package curl
 
 import (
-	"fmt"
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
@@ -10,15 +9,20 @@ import (
 func TestRollingCurl(t *testing.T) {
 	Convey("func RollingCurl()", t, func() {
 		Convey("correct", func() {
-			res, err := request()
+			res, err := request(15)
 			So(err, ShouldBeNil)
-			fmt.Println("<<<", res)
-			fmt.Println(">>>", err)
+			So(res, ShouldNotBeEmpty)
+		})
+
+		Convey("uncorrect", func() {
+			res, err := request(1)
+			So(err, ShouldNotBeNil)
+			So(res, ShouldBeEmpty)
 		})
 	})
 }
 
-func request() (string, error) {
+func request(timeout int64) (string, error) {
 	res, err := RollingCurl(
 		Requests{
 			Method: "POST",
@@ -26,11 +30,13 @@ func request() (string, error) {
 			Header: map[string]string{
 				"Content-Type": "application/json;charset=UTF-8;",
 			},
-			Raw: `{"name":"KII","age":24}`,
+			Raw:        `{"name":"KII","age":24}`,
+			RetryTimes: 3,
+			Timeout:    timeout,
 		},
 	)
 	if err != nil {
 		return "", err
 	}
-	return res, nil
+	return res.Body, nil
 }

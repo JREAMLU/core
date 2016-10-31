@@ -16,14 +16,13 @@ type Requests struct {
 	Timeout    int64
 }
 
-func init() {
-	r := new(Requests)
-	r.RetryTimes = 1
-	r.Timeout = 15
+type Responses struct {
+	Response *http.Response
+	Body     string
 }
 
 //RollingCurl http请求url
-func RollingCurl(r Requests) (string, error) {
+func RollingCurl(r Requests) (rp Responses, err error) {
 	var i int64 = 0
 RELOAD:
 	client := &http.Client{
@@ -37,7 +36,7 @@ RELOAD:
 	)
 
 	if err != nil {
-		return "", err
+		return rp, err
 	}
 
 	for hkey, hval := range r.Header {
@@ -45,44 +44,22 @@ RELOAD:
 	}
 
 	resp, err := client.Do(req)
+	rp.Response = resp
 	if err != nil {
 		i++
 		if i < r.RetryTimes {
 			goto RELOAD
 		}
-		return "", err
+		return rp, err
 	}
 
 	defer resp.Body.Close()
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return "", err
+		return rp, err
 	}
 
-	return string(body), nil
+	rp.Body = string(body)
+	return rp, nil
 }
-
-//example
-/*
-func main() {
-	res, err := RollingCurl(
-		Requests{
-			Method: "POST",
-			UrlStr: "http://localhost/study/curl/servera.php",
-			Header: map[string]string{
-				"Content-Type": "application/json;charset=UTF-8;",
-			},
-			Raw: `{"name":"KII","age":24}`,
-		},
-	)
-	if err != nil {
-		fmt.Println(err)
-	}
-	var result = make(map[string]interface{})
-	json.Unmarshal([]byte(res), &result)
-	for k, v := range result {
-		fmt.Printf("%s: %v \n", k, v)
-	}
-}
-*/
