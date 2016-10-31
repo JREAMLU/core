@@ -1,11 +1,8 @@
 package com
 
-import (
-	"github.com/JREAMLU/core/user_agent"
-	"github.com/JREAMLU/core/useragent"
-)
+import "github.com/JREAMLU/core/user_agent"
 
-func ParseUserAgent_(ual string) map[string]interface{} {
+func ParseUserAgent(ual string) map[string]interface{} {
 	res := make(map[string]interface{})
 	ua := user_agent.New(ual)
 
@@ -23,32 +20,6 @@ func ParseUserAgent_(ual string) map[string]interface{} {
 	res["engine_version"] = eversion
 	res["browser_name"] = bname
 	res["browser_version"] = bversion
-	mu.Unlock()
-
-	return res
-}
-
-func ParseUserAgent(ual string) map[string]interface{} {
-	res := make(map[string]interface{})
-	agent := useragent.ParseByString(ual)
-	bot := false
-	mobile := false
-
-	if agent.Type == "robot" {
-		bot = true
-	}
-
-	if agent.Device.Type == "mobile" {
-		mobile = true
-	}
-
-	mu.Lock()
-	res["browser_name"] = agent.Client["name"]
-	res["browser_version"] = agent.Client["version"]
-	res["platform"] = agent.OS.Name
-	res["os"] = agent.OS.Version
-	res["bot"] = bot
-	res["mobile"] = mobile
 	mu.Unlock()
 
 	return res
