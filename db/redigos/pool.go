@@ -54,30 +54,30 @@ func (p *RedisPool) register(db string) (pool *redis.Pool) {
 			Dial: func() (redis.Conn, error) {
 				tcpAddr, err := net.ResolveTCPAddr("tcp", p.addr)
 				if err != nil {
-					beego.Trace("ResolveTCPAddr Error" + err.Error())
+					beego.Info("ResolveTCPAddr Error" + err.Error())
 					return nil, err
 				}
 				tc, err := net.DialTCP("tcp", nil, tcpAddr)
 				if err != nil {
-					beego.Trace("DialTCP Error" + err.Error())
+					beego.Info("DialTCP Error" + err.Error())
 					return nil, err
 				}
 				if err := tc.SetKeepAlive(true); err != nil {
-					beego.Trace("SetKeepAlive Error" + err.Error())
+					beego.Info("SetKeepAlive Error" + err.Error())
 					return nil, err
 				}
 				if err := tc.SetKeepAlivePeriod(2 * time.Hour); err != nil {
-					beego.Trace("SetKeepAlivePeriod Error" + err.Error())
+					beego.Info("SetKeepAlivePeriod Error" + err.Error())
 					return nil, err
 				}
 				c := redis.NewConn(tc, 10*time.Second, 10*time.Second)
 
 				_, err = c.Do("SELECT", db)
 				if err != nil {
-					beego.Trace("cant select" + db + err.Error())
+					beego.Info("cant select" + db + err.Error())
 					return nil, err
 				}
-				beego.Trace("RedisDialAgain")
+				beego.Info("RedisDialAgain")
 				return c, nil
 			},
 			TestOnBorrow: func(c redis.Conn, t time.Time) error {

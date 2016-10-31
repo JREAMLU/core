@@ -88,7 +88,7 @@ func ValidSignT(requestData []byte, sign string, timestamp int64, secretKey stri
 	signed := GenerateSign(jsonData, timestamp, secretKey)
 
 	if sign != signed {
-		beego.Trace("sign: ", sign, "==", signed)
+		beego.Info("sign: ", sign, "==", signed)
 		return errors.New(i18n.Tr(global.Lang, "sign.INVALIDSIGNATURE"))
 	}
 

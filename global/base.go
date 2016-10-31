@@ -50,9 +50,9 @@ func (this *BaseController) Prepare() {
 	}
 
 	for _, lang := range langs {
-		beego.Trace("Loading language: " + lang)
+		beego.Info("Loading language: " + lang)
 		if err := i18n.SetMessage(lang, "lang/"+"locale_"+lang+".ini"); err != nil {
-			beego.Trace("Fail to set message file: " + err.Error())
+			beego.Info("Fail to set message file: " + err.Error())
 			return
 		}
 	}

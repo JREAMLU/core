@@ -21,13 +21,13 @@ func InitElastic(url string) error {
 	if err != nil {
 		return err
 	}
-	beego.Trace("Elasticsearch returned with code " + strconv.Itoa(code) + "and version " + info.Version.Number)
+	beego.Info("Elasticsearch returned with code " + strconv.Itoa(code) + "and version " + info.Version.Number)
 
 	esversion, err := ESClient.ElasticsearchVersion(url)
 	if err != nil {
 		return err
 	}
-	beego.Trace("Elasticsearch version " + esversion)
+	beego.Info("Elasticsearch version " + esversion)
 
 	return nil
 }
@@ -44,7 +44,7 @@ func CreateIndexElastic(index string) error {
 		}
 		if !createIndex.Acknowledged {
 			// Not acknowledged
-			beego.Trace("Not acknowledged: " + strconv.FormatBool(createIndex.Acknowledged))
+			beego.Info("Not acknowledged: " + strconv.FormatBool(createIndex.Acknowledged))
 		}
 	}
 	return nil

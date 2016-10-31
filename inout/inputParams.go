@@ -58,11 +58,11 @@ func InputParams(r *context.Context) (map[string]interface{}, jcontext.Context) 
 	querystrJson, _ := json.Marshal(querystrMap)
 	querystring := r.Request.RequestURI
 
-	beego.Trace(jctx.Value("requestID").(string), ":", "input params header", string(header))
-	beego.Trace(jctx.Value("requestID").(string), ":", "input params body", string(body))
-	beego.Trace(jctx.Value("requestID").(string), ":", "input params cookies", string(cookies))
-	beego.Trace(jctx.Value("requestID").(string), ":", "input params querystrJson", string(querystrJson))
-	beego.Trace(jctx.Value("requestID").(string), ":", "input params querystring", string(querystring))
+	beego.Info(jctx.Value("requestID").(string), ":", "input params header", string(header))
+	beego.Info(jctx.Value("requestID").(string), ":", "input params body", string(body))
+	beego.Info(jctx.Value("requestID").(string), ":", "input params cookies", string(cookies))
+	beego.Info(jctx.Value("requestID").(string), ":", "input params querystrJson", string(querystrJson))
+	beego.Info(jctx.Value("requestID").(string), ":", "input params querystring", string(querystring))
 
 	data := make(map[string]interface{})
 	mu.Lock()
@@ -106,7 +106,7 @@ func InputParamsCheck(jctx jcontext.Context, data map[string]interface{}, stdata
 	for _, val := range stdata {
 		is, err := valid.Valid(val)
 		if err != nil {
-			beego.Trace(
+			beego.Info(
 				jctx.Value("requestID").(string), ":",
 				i18n.Tr(global.Lang, "outputParams.SYSTEMILLEGAL"),
 				err.Error(),
@@ -118,7 +118,7 @@ func InputParamsCheck(jctx jcontext.Context, data map[string]interface{}, stdata
 
 		if !is {
 			for _, err := range valid.Errors {
-				beego.Trace(
+				beego.Info(
 					jctx.Value("requestID").(string), ":",
 					i18n.Tr(global.Lang, "outputParams.DATAPARAMSILLEGAL"),
 					err.Key, ":", err.Message,
@@ -175,7 +175,7 @@ func HeaderCheck(jctx jcontext.Context, data map[string]interface{}) (result Res
 	is, err := valid.Valid(&h)
 
 	if err != nil {
-		beego.Trace(
+		beego.Info(
 			jctx.Value("requestID").(string), ":",
 			i18n.Tr(global.Lang, "outputParams.SYSTEMILLEGAL"),
 			err.Error(),
@@ -186,7 +186,7 @@ func HeaderCheck(jctx jcontext.Context, data map[string]interface{}) (result Res
 
 	if !is {
 		for _, err := range valid.Errors {
-			beego.Trace(
+			beego.Info(
 				jctx.Value("requestID").(string), ":",
 				i18n.Tr(global.Lang, "outputParams.METAPARAMSILLEGAL"),
 				err.Key, ":", err.Message,
