@@ -1,7 +1,6 @@
 package global
 
 import (
-	"fmt"
 	"strings"
 
 	"github.com/astaxie/beego"
@@ -24,20 +23,7 @@ type langType struct {
 
 var Lang string
 
-func (this *BaseController) Prepare() {
-	//Accept-Language
-	acceptLanguage := this.Ctx.Request.Header.Get("Accept-Language")
-	if len(acceptLanguage) > 4 {
-		acceptLanguage = acceptLanguage[:5] // Only compare first 5 letters.
-		if i18n.IsExist(acceptLanguage) {
-			Lang = acceptLanguage
-		}
-	}
-
-	if len(Lang) == 0 {
-		Lang = "en-US"
-	}
-
+func init() {
 	// Initialized language type list.
 	langs := strings.Split(beego.AppConfig.String("lang.types"), "|")
 	names := strings.Split(beego.AppConfig.String("lang.names"), "|")
@@ -58,28 +44,19 @@ func (this *BaseController) Prepare() {
 	}
 }
 
-func GoGetAllAppConfig() map[string]interface{} {
-	var core = make(map[string]interface{})
-	core["author"] = beego.AppConfig.String("core.author")
-	core["ProjectName"] = beego.AppConfig.String("core.ProjectName")
-
-	for key, value := range core {
-		fmt.Println(key, ":", value)
+func (this *BaseController) Prepare() {
+	//Accept-Language
+	acceptLanguage := this.Ctx.Request.Header.Get("Accept-Language")
+	if len(acceptLanguage) > 4 {
+		acceptLanguage = acceptLanguage[:5] // Only compare first 5 letters.
+		if i18n.IsExist(acceptLanguage) {
+			Lang = acceptLanguage
+		}
 	}
 
-	return core
-}
-
-func (this *BaseController) GoGetAuthor() string {
-	return beego.AppConfig.String("core.author")
-}
-
-func (this *BaseController) GoGetProjectName() string {
-	return beego.AppConfig.String("core.ProjectName")
-}
-
-func (this *BaseController) GogetUrlDomain() string {
-	return beego.AppConfig.String("ShortUrl")
+	if len(Lang) == 0 {
+		Lang = "en-US"
+	}
 }
 
 func (this *BaseController) Tr(format string) string {
