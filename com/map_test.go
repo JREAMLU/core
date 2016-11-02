@@ -1,6 +1,7 @@
 package com
 
 import (
+	"reflect"
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
@@ -140,4 +141,33 @@ func TestEqualMapInterface(t *testing.T) {
 			So(ok, ShouldBeFalse)
 		})
 	})
+}
+
+func BenchmarkEqualMapInt(b *testing.B) {
+	map1 := map[string]int{"a": 1, "b": 2, "c": 3}
+	map2 := map[string]int{"a": 1, "c": 3, "b": 2}
+
+	Convey("bench EqualMapInt()", b, func() {
+		for i := 0; i < b.N; i++ {
+			EqualMapInt(map1, map2)
+		}
+	})
+}
+
+func BenchmarkEqualMapInterface(b *testing.B) {
+	map1 := map[string]interface{}{"a": 1.1, "b": "b", "c": 3}
+	map2 := map[string]interface{}{"a": 1.1, "b": "b", "c": 3}
+
+	for i := 0; i < b.N; i++ {
+		EqualMapInterface(map1, map2)
+	}
+}
+
+func BenchmarkEqualMapDeepEqual(b *testing.B) {
+	map1 := map[string]interface{}{"a": 1.1, "b": "b", "c": 3}
+	map2 := map[string]interface{}{"a": 1.1, "b": "b", "c": 3}
+
+	for i := 0; i < b.N; i++ {
+		reflect.DeepEqual(map1, map2)
+	}
 }
