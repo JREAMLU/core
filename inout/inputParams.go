@@ -213,7 +213,7 @@ func HeaderCheck(jctx jcontext.Context, data map[string]interface{}) (result Res
 
 //HeaderParamCheck 验证header固定信息
 func HeaderParamCheck(h []string, k string) (result Result, err error) {
-	if strings.ToLower(h[0]) != strings.ToLower(beego.AppConfig.String(k)) {
+	if len(h) == 0 || strings.ToLower(h[0]) != strings.ToLower(beego.AppConfig.String(k)) {
 		message := ""
 		switch k {
 		case "Content-Type":
