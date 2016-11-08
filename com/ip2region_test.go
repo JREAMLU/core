@@ -1,7 +1,6 @@
 package com
 
 import (
-	"fmt"
 	"log"
 	"testing"
 
@@ -17,15 +16,8 @@ func TestQuery(t *testing.T) {
 	Convey("func Query()", t, func() {
 		Convey("correct", func() {
 			ip, err := Query([]string{"127.0.0.1", "119.75.218.70"}, "memory")
-			fmt.Println(ip, err)
+			So(err, ShouldBeNil)
+			So(ip, ShouldNotBeNil)
 		})
 	})
 }
-
-// func BenchmarkMapMerge(b *testing.B) {
-// 	Convey("bench Query()", b, func() {
-// 		for i := 0; i < b.N; i++ {
-// 			mapmerge()
-// 		}
-// 	})
-// }
