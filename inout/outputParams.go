@@ -20,14 +20,14 @@ const (
 
 type Output struct {
 	Meta       MetaList    `json:"meta"`
-	StatusCode int         `json:"status_code"`
+	StatusCode int         `json:"statusCode"`
 	Message    interface{} `json:"message"`
 	Data       interface{} `json:"data"`
 }
 
 type MetaList struct {
-	RequestId string    `json:"Request-Id"`
-	UpdatedAt time.Time `json:"updated_at"`
+	RequestId string    `json:"RequestID"`
+	UpdatedAt time.Time `json:"updatedAT"`
 	Timezone  string    `json:"timezone"`
 }
 
