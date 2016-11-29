@@ -58,6 +58,14 @@ func TestConGorm(t *testing.T) {
 	})
 }
 
+func TestConGorms(t *testing.T) {
+	Convey("func ConGorms()", t, func() {
+		var gcs GormConfs
+		err := gcs.InitGorms("./mysql.yml")
+		So(err, ShouldBeNil)
+	})
+}
+
 func TestInsert(t *testing.T) {
 	var r Redirect
 	r.LongUrl = "http://o9d.cn/"

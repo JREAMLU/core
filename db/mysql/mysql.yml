@@ -1,0 +1,12 @@
+mysqlConfig:  
+    - name: base
+      driver: mysql
+      singularTable: true
+      logMode: true
+      setting: root:PluMy_123@tcp(172.16.9.230:3306)/cron?charset:utf8&parsetime:true&loc:local
+
+    - name: analytics
+      driver: mysql
+      singularTable: true
+      logMode: true
+      setting: root:PluMy_123@tcp(172.16.9.230:3306)/cron?charset:utf8&parsetime:true&loc:local
