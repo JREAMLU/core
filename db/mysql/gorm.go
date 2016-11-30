@@ -1,8 +1,9 @@
 package mysql
 
 import (
-	"fmt"
+	"errors"
 
+	"github.com/JREAMLU/core/com"
 	"github.com/JREAMLU/core/io"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jinzhu/gorm"
@@ -48,14 +49,20 @@ func (gconfs *GormConfs) InitGorms(filePath string) error {
 	for _, gconf := range gconfs.GormConf {
 		XS[gconf.Name], err = gorm.Open(gconf.Driver, gconf.Setting)
 		if err != nil {
-			return err
+			return errors.New(com.StringJoin("DB Alias \"", gconf.Name, "\": ", err.Error()))
 		}
 		XS[gconf.Name].SingularTable(gconf.SingularTable)
 		XS[gconf.Name].LogMode(gconf.LogMode)
-		fmt.Println(gconf.Setting)
 	}
 
 	return nil
+}
+
+func GetXS(serverName string) (*gorm.DB, error) {
+	if _, ok := XS[serverName]; ok {
+		return XS[serverName], nil
+	}
+	return nil, errors.New("map key <" + serverName + "> is nil")
 }
 
 /*
