@@ -6,15 +6,17 @@ import (
 	"github.com/freshcn/async"
 )
 
+// AddFunc go func
 type AddFunc struct {
 	Logo    string
 	Handler interface{}
 	Params  []interface{}
 }
 
+// MultiAddFunc []go func
 type MultiAddFunc []AddFunc
 
-//GoAsync 异步调用
+// GoAsyncRequest 异步调用
 func GoAsyncRequest(addFunc []AddFunc, length int) (map[string][]interface{}, error) {
 	async := async.New()
 

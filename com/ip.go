@@ -7,7 +7,8 @@ import (
 	"strings"
 )
 
-func Ip2Int(ip string) int64 {
+// IP2Int ip to int
+func IP2Int(ip string) int64 {
 	arrary := strings.Split(ip, ".")
 	if len(arrary) != 4 {
 		return 0
@@ -31,7 +32,8 @@ func Ip2Int(ip string) int64 {
 	return int64(((A*256+B)*256+C)*256 + D)
 }
 
-func Int2Ip(ip int64) string {
+// Int2IP int to ip
+func Int2IP(ip int64) string {
 	ulMask := [4]int64{0x000000FF, 0x0000FF00, 0x00FF0000, 0xFF000000}
 	var result [4]string
 	for i := 0; i < 4; i++ {
@@ -40,6 +42,7 @@ func Int2Ip(ip int64) string {
 	return strings.Join(result[:], ".")
 }
 
+// ExternalIP external ip
 func ExternalIP() (string, error) {
 	ifaces, err := net.Interfaces()
 	if err != nil {
