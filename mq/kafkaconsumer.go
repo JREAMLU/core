@@ -10,6 +10,7 @@ import (
 	"github.com/wvanbergen/kafka/consumergroup"
 )
 
+// KafkaConsumer kafka consumer
 type KafkaConsumer struct {
 	Topic             string
 	GoupName          string
@@ -19,7 +20,7 @@ type KafkaConsumer struct {
 	CommitInterval    time.Duration
 }
 
-//InitKafkaConsumer run
+// InitKafkaConsumer run
 func (kc *KafkaConsumer) InitKafkaConsumer(prehookF func(), handleF func(string), posthookF func()) error {
 	log.Info("start topic:%s consumer", kc.Topic)
 	log.Info("consumer group name:%s", kc.GoupName)

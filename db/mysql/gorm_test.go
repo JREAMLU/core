@@ -33,8 +33,8 @@ var (
 
 type Redirect struct {
 	ID          uint64 `gorm:"primary_key;column:redirect_id"`
-	LongUrl     string `gorm:"column:long_url"`
-	ShortUrl    string `gorm:"column:short_url"`
+	LongURL     string `gorm:"column:long_url"`
+	ShortURL    string `gorm:"column:short_url"`
 	LongCrc     uint64 `gorm:"column:long_crc"`
 	ShortCrc    uint64 `gorm:"column:short_crc"`
 	Status      uint8  `gorm:"column:status"`
@@ -68,8 +68,8 @@ func TestConGorms(t *testing.T) {
 
 func TestInsert(t *testing.T) {
 	var r Redirect
-	r.LongUrl = "http://o9d.cn/"
-	r.ShortUrl = "http://goo.lu/XI13G"
+	r.LongURL = "http://o9d.cn/"
+	r.ShortURL = "http://goo.lu/XI13G"
 	r.LongCrc = 12345
 	r.ShortCrc = 54321
 	r.Status = 1
@@ -87,8 +87,8 @@ func TestInsert(t *testing.T) {
 
 func TestUpdate(t *testing.T) {
 	var r Redirect
-	r.LongUrl = "http://www.o9d.cn/"
-	r.ShortUrl = "http://www.goo.lu/XI13G"
+	r.LongURL = "http://www.o9d.cn/"
+	r.ShortURL = "http://www.goo.lu/XI13G"
 	r.LongCrc = 123456
 	r.ShortCrc = 654321
 	r.Status = 1
@@ -111,8 +111,8 @@ func TestUpdate(t *testing.T) {
 
 func BenchmarkInsert(b *testing.B) {
 	var r Redirect
-	r.LongUrl = "http://o9d.cn/"
-	r.ShortUrl = "http://goo.lu/XI13G"
+	r.LongURL = "http://o9d.cn/"
+	r.ShortURL = "http://goo.lu/XI13G"
 	r.LongCrc = 12345
 	r.ShortCrc = 54321
 	r.Status = 1
@@ -130,8 +130,8 @@ func BenchmarkInsert(b *testing.B) {
 
 func BenchmarkUpdate(b *testing.B) {
 	var r Redirect
-	r.LongUrl = "http://www.o9d.cn/"
-	r.ShortUrl = "http://www.goo.lu/XI13G"
+	r.LongURL = "http://www.o9d.cn/"
+	r.ShortURL = "http://www.goo.lu/XI13G"
 	r.LongCrc = 123456
 	r.ShortCrc = 654321
 	r.Status = 1

@@ -22,6 +22,7 @@ const (
 )
 */
 
+// InitLogs init logs
 func InitLogs() {
 	path := beego.AppConfig.String("log.path") + beego.AppConfig.String("appname") + time.Now().Format("2006-01-02") + ".log"
 	file := beego.AppConfig.String("log.file")

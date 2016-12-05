@@ -25,6 +25,7 @@ func newRedisPool(addr string, maxIdle int, idleTimeout time.Duration) *RedisPoo
 	}
 }
 
+// RedisPool redis pool
 type RedisPool struct {
 	pools       map[string]*redis.Pool
 	addr        string
@@ -62,11 +63,11 @@ func (p *RedisPool) register(db string) (pool *redis.Pool) {
 					beego.Info("DialTCP Error" + err.Error())
 					return nil, err
 				}
-				if err := tc.SetKeepAlive(true); err != nil {
+				if err = tc.SetKeepAlive(true); err != nil {
 					beego.Info("SetKeepAlive Error" + err.Error())
 					return nil, err
 				}
-				if err := tc.SetKeepAlivePeriod(2 * time.Hour); err != nil {
+				if err = tc.SetKeepAlivePeriod(2 * time.Hour); err != nil {
 					beego.Info("SetKeepAlivePeriod Error" + err.Error())
 					return nil, err
 				}
@@ -94,6 +95,7 @@ func (p *RedisPool) register(db string) (pool *redis.Pool) {
 	return pool
 }
 
+// Get get
 func (p *RedisPool) Get(db string) (pool *redis.Pool) {
 	pool = p.get(db)
 	if pool != nil {
@@ -125,6 +127,7 @@ func registerRedisPool(addr string, maxIdle int, idleTimeout time.Duration) *Red
 	return p
 }
 
+// GetRedisPool get redis pool
 func GetRedisPool(addr, db string, maxIdle int, idleTimeout time.Duration) *redis.Pool {
 	p := getRedisPool(addr, db)
 	if p != nil {

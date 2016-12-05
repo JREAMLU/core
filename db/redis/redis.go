@@ -6,6 +6,7 @@ import (
 	"gopkg.in/redis.v4"
 )
 
+// InitRedis init redis
 func InitRedis(addr string, password string, db int) (r *redis.Client, err error) {
 	r = redis.NewClient(&redis.Options{
 		Addr:     addr,

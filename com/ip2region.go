@@ -4,8 +4,10 @@ import (
 	"github.com/mohong122/ip2region/binding/golang"
 )
 
+// IP2Region ip region
 var IP2Region *ip2region.Ip2Region
 
+// InitIP2Region init ip region
 func InitIP2Region(path string) error {
 	var err error
 	IP2Region, err = ip2region.New(path)
@@ -16,6 +18,7 @@ func InitIP2Region(path string) error {
 	return nil
 }
 
+// Query query ip
 func Query(ipList []string, mode string) (map[string]ip2region.IpInfo, error) {
 	var err error
 	var ipinfo = make(map[string]ip2region.IpInfo)

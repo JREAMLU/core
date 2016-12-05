@@ -7,15 +7,17 @@ import (
 	"time"
 )
 
+// Requests struct
 type Requests struct {
 	Method     string
-	UrlStr     string
+	URLStr     string
 	Header     map[string]string
 	Raw        string
 	RetryTimes int64
 	Timeout    int64
 }
 
+// Responses struct
 type Responses struct {
 	Response *http.Response
 	Body     string
@@ -23,7 +25,7 @@ type Responses struct {
 
 //RollingCurl http请求url
 func RollingCurl(r Requests) (rp Responses, err error) {
-	var i int64 = 0
+	var i int64
 RELOAD:
 	client := &http.Client{
 		Timeout: time.Duration(r.Timeout) * time.Second,
@@ -31,7 +33,7 @@ RELOAD:
 
 	req, err := http.NewRequest(
 		r.Method,
-		r.UrlStr,
+		r.URLStr,
 		strings.NewReader(r.Raw),
 	)
 

@@ -12,6 +12,7 @@ const (
 	googleURI = "https://maps.googleapis.com/maps/api/timezone/json?location=%f,%f&timestamp=%d&sensor=false"
 )
 
+// GoogleTimezone google timezone
 type GoogleTimezone struct {
 	DstOffset    float64 `bson:"dstOffset"`
 	RawOffset    float64 `bson:"rawOffset"`
@@ -20,6 +21,7 @@ type GoogleTimezone struct {
 	TimezoneName string  `bson:"timeZoneName"`
 }
 
+// RetrieveGoogleTimezone retrieve google timezone
 func RetrieveGoogleTimezone(latitude float64, longitude float64) (googleTimezone *GoogleTimezone, err error) {
 	defer func() {
 		if r := recover(); r != nil {

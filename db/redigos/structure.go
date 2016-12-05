@@ -8,11 +8,15 @@ import (
 )
 
 const (
-	_default_pagesize    = 500
-	_default_maxidle     = 50
-	_default_idletimeout = 240 * time.Second
+	// DefaultPagesize default pagesize
+	DefaultPagesize = 500
+	// DefaultMaxidle default maxidle
+	DefaultMaxidle = 50
+	// DefaultIdletimeout default idle timeout
+	DefaultIdletimeout = 240 * time.Second
 )
 
+// RedisStructure redis structure
 type RedisStructure struct {
 	KeyPrefixFormat string
 	ServerName      string
@@ -22,6 +26,7 @@ type RedisStructure struct {
 	readConn        string
 }
 
+// NewRedisStructure new redis structure
 func NewRedisStructure(serverName, keyPrefixFormat string) RedisStructure {
 	return RedisStructure{
 		KeyPrefixFormat: keyPrefixFormat,
@@ -34,22 +39,23 @@ func (rs *RedisStructure) getPool(server string, isMaster bool) *redis.Pool {
 	if conn == nil {
 		return nil
 	}
-	return GetRedisPool(conn.IP, conn.DB, _default_maxidle, _default_idletimeout)
+	return GetRedisPool(conn.IP, conn.DB, DefaultMaxidle, DefaultIdletimeout)
 }
 
+// InitPool init pool
 func (rs *RedisStructure) InitPool(connStr, db string) {
-	rs.writePool = GetRedisPool(connStr, db, _default_maxidle, _default_idletimeout)
+	rs.writePool = GetRedisPool(connStr, db, DefaultMaxidle, DefaultIdletimeout)
 	rs.readPool = rs.writePool
 	rs.writeConn = connStr
 	rs.readConn = connStr
 }
 
+// InitRedisKey init redis key
 func (rs *RedisStructure) InitRedisKey(keySuffix string) string {
 	if keySuffix == "" {
 		return rs.KeyPrefixFormat
-	} else {
-		return fmt.Sprintf(rs.KeyPrefixFormat, keySuffix)
 	}
+	return fmt.Sprintf(rs.KeyPrefixFormat, keySuffix)
 }
 
 func (rs *RedisStructure) getConn(isMaster bool) redis.Conn {
@@ -66,12 +72,10 @@ func (rs *RedisStructure) getConn(isMaster bool) redis.Conn {
 			return nil
 		}
 		return rs.writePool.Get()
-	} else {
-		if rs.readPool == nil {
-			return nil
-		}
-		return rs.readPool.Get()
+	} else if rs.readPool == nil {
+		return nil
 	}
+	return rs.readPool.Get()
 }
 
 func (rs *RedisStructure) String(isMaster bool, cmd string, params ...interface{}) (reply string, err error) {
@@ -84,6 +88,7 @@ func (rs *RedisStructure) String(isMaster bool, cmd string, params ...interface{
 	return
 }
 
+// Strings strings
 func (rs *RedisStructure) Strings(isMaster bool, cmd string, params ...interface{}) (reply []string, err error) {
 	conn := rs.getConn(isMaster)
 	if conn == nil {
@@ -94,6 +99,7 @@ func (rs *RedisStructure) Strings(isMaster bool, cmd string, params ...interface
 	return
 }
 
+// StringMap string map
 func (rs *RedisStructure) StringMap(isMaster bool, cmd string, params ...interface{}) (reply map[string]string, err error) {
 	conn := rs.getConn(isMaster)
 	if conn == nil {
@@ -104,6 +110,7 @@ func (rs *RedisStructure) StringMap(isMaster bool, cmd string, params ...interfa
 	return
 }
 
+// Int int
 func (rs *RedisStructure) Int(isMaster bool, cmd string, params ...interface{}) (reply int, err error) {
 	conn := rs.getConn(isMaster)
 	if conn == nil {
@@ -114,6 +121,7 @@ func (rs *RedisStructure) Int(isMaster bool, cmd string, params ...interface{}) 
 	return
 }
 
+// Ints ints
 func (rs *RedisStructure) Ints(isMaster bool, cmd string, params ...interface{}) (reply []int, err error) {
 	conn := rs.getConn(isMaster)
 	if conn == nil {
@@ -124,6 +132,7 @@ func (rs *RedisStructure) Ints(isMaster bool, cmd string, params ...interface{})
 	return
 }
 
+// IntMap int map
 func (rs *RedisStructure) IntMap(isMaster bool, cmd string, params ...interface{}) (reply map[string]int, err error) {
 	conn := rs.getConn(isMaster)
 	if conn == nil {
@@ -134,6 +143,7 @@ func (rs *RedisStructure) IntMap(isMaster bool, cmd string, params ...interface{
 	return
 }
 
+// Int64 int64
 func (rs *RedisStructure) Int64(isMaster bool, cmd string, params ...interface{}) (reply int64, err error) {
 	conn := rs.getConn(isMaster)
 	if conn == nil {
@@ -144,6 +154,7 @@ func (rs *RedisStructure) Int64(isMaster bool, cmd string, params ...interface{}
 	return
 }
 
+// Int64Map int64 map
 func (rs *RedisStructure) Int64Map(isMaster bool, cmd string, params ...interface{}) (reply map[string]int64, err error) {
 	conn := rs.getConn(isMaster)
 	if conn == nil {
@@ -154,6 +165,7 @@ func (rs *RedisStructure) Int64Map(isMaster bool, cmd string, params ...interfac
 	return
 }
 
+// Bool bool
 func (rs *RedisStructure) Bool(isMaster bool, cmd string, params ...interface{}) (reply bool, err error) {
 	conn := rs.getConn(isMaster)
 	if conn == nil {
@@ -164,6 +176,7 @@ func (rs *RedisStructure) Bool(isMaster bool, cmd string, params ...interface{})
 	return
 }
 
+// Bytes bytes
 func (rs *RedisStructure) Bytes(isMaster bool, cmd string, params ...interface{}) (reply []byte, err error) {
 	conn := rs.getConn(isMaster)
 	if conn == nil {
@@ -174,6 +187,7 @@ func (rs *RedisStructure) Bytes(isMaster bool, cmd string, params ...interface{}
 	return
 }
 
+// ByteSlices byte slices
 func (rs *RedisStructure) ByteSlices(isMaster bool, cmd string, params ...interface{}) (reply [][]byte, err error) {
 	conn := rs.getConn(isMaster)
 	if conn == nil {
@@ -184,6 +198,7 @@ func (rs *RedisStructure) ByteSlices(isMaster bool, cmd string, params ...interf
 	return
 }
 
+// Float64 float64
 func (rs *RedisStructure) Float64(isMaster bool, cmd string, params ...interface{}) (reply float64, err error) {
 	conn := rs.getConn(isMaster)
 	if conn == nil {
@@ -194,6 +209,7 @@ func (rs *RedisStructure) Float64(isMaster bool, cmd string, params ...interface
 	return
 }
 
+// MultiBulk mulit bulk
 func (rs *RedisStructure) MultiBulk(isMaster bool, cmd string, params ...interface{}) (reply []interface{}, err error) {
 	conn := rs.getConn(isMaster)
 	if conn == nil {
@@ -204,6 +220,7 @@ func (rs *RedisStructure) MultiBulk(isMaster bool, cmd string, params ...interfa
 	return
 }
 
+// Uint64 uint64
 func (rs *RedisStructure) Uint64(isMaster bool, cmd string, params ...interface{}) (reply uint64, err error) {
 	conn := rs.getConn(isMaster)
 	if conn == nil {
@@ -214,6 +231,7 @@ func (rs *RedisStructure) Uint64(isMaster bool, cmd string, params ...interface{
 	return
 }
 
+// Values values
 func (rs *RedisStructure) Values(isMaster bool, cmd string, params ...interface{}) (reply []interface{}, err error) {
 	conn := rs.getConn(isMaster)
 	if conn == nil {
@@ -224,10 +242,12 @@ func (rs *RedisStructure) Values(isMaster bool, cmd string, params ...interface{
 	return
 }
 
+// Keys keys
 func (rs *RedisStructure) Keys(pattern string) ([]string, error) {
 	return rs.Strings(false, "KEYS", pattern)
 }
 
+// DelKey delete key
 func (rs *RedisStructure) DelKey(keySuffix string) (bool, error) {
 	key := rs.InitRedisKey(keySuffix)
 	reply, err := rs.Int(true, "DEL", key)
@@ -259,6 +279,7 @@ func (rs *RedisStructure) getConnstr(isMaster bool) string {
 	return redisConn.IP
 }
 
+// Ping ping
 func (rs *RedisStructure) Ping(isMaster bool) (interface{}, error) {
 	conn := rs.getConn(isMaster)
 	if conn == nil {
@@ -268,6 +289,7 @@ func (rs *RedisStructure) Ping(isMaster bool) (interface{}, error) {
 	return conn.Do("PING")
 }
 
+// Exists exists
 func (rs *RedisStructure) Exists(key string) (bool, error) {
 	isMaster := false
 	conn := rs.getConn(isMaster)
@@ -282,22 +304,26 @@ func (rs *RedisStructure) Exists(key string) (bool, error) {
 	return exists == 1, nil
 }
 
+// Rename rename
 func (rs *RedisStructure) Rename(keySuffix, newKey string) (string, error) {
 	key := rs.InitRedisKey(keySuffix)
 	return rs.String(true, "RENAME", key, newKey)
 }
 
+// Expire expire
 func (rs *RedisStructure) Expire(keySuffix string, second int) (bool, error) {
 	key := rs.InitRedisKey(keySuffix)
 	reply, err := rs.Int(true, "EXPIRE", key, second)
 	return reply > 0, err
 }
 
+// TTL ttl
 func (rs *RedisStructure) TTL(keySuffix string) (int, error) {
 	key := rs.InitRedisKey(keySuffix)
 	return rs.Int(false, "TTL", key)
 }
 
+// MultiExec Multi Exec
 func (rs *RedisStructure) MultiExec(isMaster bool, cmds [][]interface{}) ([]interface{}, error) {
 	conn := rs.getConn(isMaster)
 	if conn == nil {

@@ -8,8 +8,10 @@ import (
 	"gopkg.in/olivere/elastic.v3"
 )
 
+// ESClient es client
 var ESClient *elastic.Client
 
+// InitElastic init es
 func InitElastic(url string) error {
 	var err error
 	ESClient, err = elastic.NewClient(elastic.SetURL(url))
@@ -32,6 +34,7 @@ func InitElastic(url string) error {
 	return nil
 }
 
+// CreateIndexElastic create index
 func CreateIndexElastic(index string) error {
 	exists, err := ESClient.IndexExists(index).Do()
 	if err != nil {

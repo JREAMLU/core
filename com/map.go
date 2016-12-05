@@ -1,5 +1,6 @@
 package com
 
+// MapMerge map merge
 func MapMerge(ms ...map[string]interface{}) map[string]interface{} {
 	var nm = make(map[string]interface{})
 	for _, m := range ms {
@@ -12,6 +13,7 @@ func MapMerge(ms ...map[string]interface{}) map[string]interface{} {
 	return nm
 }
 
+// EqualMapInt equal map int
 func EqualMapInt(x, y map[string]int) bool {
 	if len(x) != len(y) {
 		return false
@@ -24,6 +26,7 @@ func EqualMapInt(x, y map[string]int) bool {
 	return true
 }
 
+// EqualMapInt64 equal map int64
 func EqualMapInt64(x, y map[string]int64) bool {
 	if len(x) != len(y) {
 		return false
@@ -36,6 +39,7 @@ func EqualMapInt64(x, y map[string]int64) bool {
 	return true
 }
 
+// EqualMapString equal map string
 func EqualMapString(x, y map[string]string) bool {
 	if len(x) != len(y) {
 		return false
@@ -48,6 +52,7 @@ func EqualMapString(x, y map[string]string) bool {
 	return true
 }
 
+// EqualMapFloat32 equal map float32
 func EqualMapFloat32(x, y map[string]float32) bool {
 	if len(x) != len(y) {
 		return false
@@ -60,6 +65,7 @@ func EqualMapFloat32(x, y map[string]float32) bool {
 	return true
 }
 
+// EqualMapFloat64 equal map float64
 func EqualMapFloat64(x, y map[string]float64) bool {
 	if len(x) != len(y) {
 		return false
@@ -72,6 +78,7 @@ func EqualMapFloat64(x, y map[string]float64) bool {
 	return true
 }
 
+// EqualMapInterface equal map interface
 func EqualMapInterface(x, y map[string]interface{}) bool {
 	if len(x) != len(y) {
 		return false

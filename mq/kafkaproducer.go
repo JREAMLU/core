@@ -9,6 +9,7 @@ var (
 	producer sarama.AsyncProducer
 )
 
+// InitKafka init kafka
 func InitKafka(kafkaAddrs []string) (err error) {
 	config := sarama.NewConfig()
 	config.Producer.RequiredAcks = sarama.NoResponse
@@ -40,11 +41,13 @@ func handleError(p sarama.AsyncProducer) {
 	}
 }
 
+// PushKafka push kafka
 func PushKafka(topic string, value string) (err error) {
 	producer.Input() <- &sarama.ProducerMessage{Topic: topic, Value: sarama.StringEncoder(value)}
 	return
 }
 
+// Close close
 func Close() {
 	if producer == nil {
 		return

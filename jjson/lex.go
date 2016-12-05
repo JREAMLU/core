@@ -102,8 +102,7 @@ type lexer struct {
 }
 
 func (l *lexer) nextItem() item {
-	item := <-l.items
-	return item
+	return <-l.items
 }
 
 func lex(input io.Reader) *lexer {
@@ -158,9 +157,8 @@ func runeLen(lead byte) int {
 		return 2
 	} else if lead < 0xF0 {
 		return 3
-	} else {
-		return 4
 	}
+	return 4
 }
 
 func (l *lexer) emit(t itemType) {
@@ -254,9 +252,8 @@ Loop:
 				break Loop
 			} else if strings.IndexRune("0123456789-", l.peek()) >= 0 {
 				return lexNumber
-			} else {
-				return lexIdentifier
 			}
+			return lexIdentifier
 		}
 	}
 	l.emit(itemEOF)
@@ -279,7 +276,7 @@ func lexString(l *lexer) stateFn {
 		case r == '\\':
 			if l.accept(`"\/bfnrt`) {
 				break
-			} else if r := l.next(); r == 'u' {
+			} else if r = l.next(); r == 'u' {
 				for i := 0; i < 4; i++ {
 					if !l.accept(hexdigit) {
 						return l.errorf("expected 4 hexadecimal digits")
@@ -398,6 +395,7 @@ func lexBlockComment(l *lexer) stateFn {
 	return nil
 }
 
+// WriteMinifiedTo write minify fied to
 func WriteMinifiedTo(writer io.Writer, reader io.Reader) error {
 	l := lex(reader)
 	for {

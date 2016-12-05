@@ -3,10 +3,14 @@ package com
 import "time"
 
 const (
-	Time_Format_default  = "2006-01-02 15:04:05"
-	Time_Format_yymmdd   = "060102"
-	Time_Format_yyyymmdd = "20060102"
-	Time_Format_yyyymm   = "200601"
+	// TimeFormatDefault default
+	TimeFormatDefault = "2006-01-02 15:04:05"
+	// TimeFormatyymmdd yymmdd
+	TimeFormatyymmdd = "060102"
+	// TimeFormatyyyymmdd yyyymmdd
+	TimeFormatyyyymmdd = "20060102"
+	// TimeFormatyyyymm yyyymm
+	TimeFormatyyyymm = "200601"
 )
 
 //Today 当天，时分秒为0
@@ -15,25 +19,30 @@ func Today() time.Time {
 	return time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, now.Location())
 }
 
+// CurrHourUnix current hour unix
 func CurrHourUnix() int64 {
 	now := time.Now()
 	return time.Date(now.Year(), now.Month(), now.Day(), now.Hour(), 0, 0, 0, now.Location()).Unix()
 }
 
+// Formatyymmdd yymmdd
 func Formatyymmdd(date time.Time) string {
-	return date.Format(Time_Format_yymmdd)
+	return date.Format(TimeFormatyymmdd)
 }
 
+// Formatyyyymmdd yyyymmdd
 func Formatyyyymmdd(date time.Time) string {
-	return date.Format(Time_Format_yyyymmdd)
+	return date.Format(TimeFormatyyyymmdd)
 }
 
+// Formatyyyymm yyyymm
 func Formatyyyymm(date time.Time) string {
-	return date.Format(Time_Format_yyyymm)
+	return date.Format(TimeFormatyyyymm)
 }
 
+// FormatDefault default
 func FormatDefault(date time.Time) string {
-	return date.Format(Time_Format_default)
+	return date.Format(TimeFormatDefault)
 }
 
 //TicksToTime c#中的时间Ticks转成time.Time
@@ -43,6 +52,7 @@ func TicksToTime(ticks int64) time.Time {
 	return time.Unix(ticks/n, ticks-(ticks/n)*n).AddDate(-1969, 0, 0).Add(-8 * time.Hour)
 }
 
+// TimeToTicks time to ticks
 func TimeToTicks(t time.Time) int64 {
 	return t.AddDate(1969, 0, 0).Unix() * 10000000
 }

@@ -5,11 +5,13 @@ import (
 
 	"github.com/JREAMLU/core/com"
 	"github.com/JREAMLU/core/io"
+	// mysql driver
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jinzhu/gorm"
 	yaml "gopkg.in/yaml.v2"
 )
 
+// GormConf gorm config
 type GormConf struct {
 	Name          string `yaml:"name"`
 	Driver        string `yaml:"driver"`
@@ -18,14 +20,18 @@ type GormConf struct {
 	LogMode       bool   `yaml:"logMode"`
 }
 
+// GormConfs gorm configs
 type GormConfs struct {
 	GormConf []GormConf `yaml:"mysqlConfig"`
 }
 
+// X gorm.DB
 var X *gorm.DB
+
+// XS gorm.DB map
 var XS map[string]*gorm.DB
 
-//"root:root@tcp(localhost:3306)/plucron?charset=utf8&parseTime=True&loc=Local"
+// InitGorm "root:root@tcp(localhost:3306)/plucron?charset=utf8&parseTime=True&loc=Local"
 func (gconf *GormConf) InitGorm() error {
 	var err error
 	X, err = gorm.Open(gconf.Driver, gconf.Setting)
@@ -37,6 +43,7 @@ func (gconf *GormConf) InitGorm() error {
 	return nil
 }
 
+// InitGorms init gorms
 func (gconfs *GormConfs) InitGorms(filePath string) error {
 	XS = make(map[string]*gorm.DB)
 	result, err := io.ReadAllBytes(filePath)
@@ -58,6 +65,7 @@ func (gconfs *GormConfs) InitGorms(filePath string) error {
 	return nil
 }
 
+// GetXS get XS
 func GetXS(serverName string) (*gorm.DB, error) {
 	if _, ok := XS[serverName]; ok {
 		return XS[serverName], nil

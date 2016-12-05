@@ -2,9 +2,11 @@ package io
 
 import (
 	"io/ioutil"
+	"log"
 	"os"
 )
 
+// ReadAll read all
 func ReadAll(path string) string {
 	fi, err := os.Open(path)
 	if err != nil {
@@ -12,9 +14,13 @@ func ReadAll(path string) string {
 	}
 	defer fi.Close()
 	fd, err := ioutil.ReadAll(fi)
+	if err != nil {
+		log.Println("ioutil error: ", err)
+	}
 	return string(fd)
 }
 
+// ReadAllBytes read all bytes
 func ReadAllBytes(path string) ([]byte, error) {
 	fi, err := os.Open(path)
 	if err != nil {
@@ -24,6 +30,7 @@ func ReadAllBytes(path string) ([]byte, error) {
 	return ioutil.ReadAll(fi)
 }
 
+// WriteFile write file
 func WriteFile(path, content string, isOverride bool) error {
 	var flag int
 	if isOverride {
@@ -40,6 +47,7 @@ func WriteFile(path, content string, isOverride bool) error {
 	return nil
 }
 
+// MkdireAll mkdir all
 func MkdireAll(path string) error {
 	if _, err := os.Stat(path); os.IsNotExist(err) {
 		// create controller directory
@@ -50,6 +58,7 @@ func MkdireAll(path string) error {
 	return nil
 }
 
+// CheckFileExists check file exists
 func CheckFileExists(filePath string) bool {
 	if _, err := os.Stat(filePath); os.IsExist(err) {
 		return true
@@ -57,6 +66,7 @@ func CheckFileExists(filePath string) bool {
 	return false
 }
 
+// CreateFileOfTrunc create file of trunc
 func CreateFileOfTrunc(filePath string) (*os.File, error) {
 	if CheckFileExists(filePath) {
 		return os.OpenFile(filePath, os.O_TRUNC, 0666)
@@ -64,6 +74,7 @@ func CreateFileOfTrunc(filePath string) (*os.File, error) {
 	return os.Create(filePath)
 }
 
+// CreateFileOfAppend create file of append
 func CreateFileOfAppend(filePath string) (*os.File, error) {
 	return os.OpenFile(filePath, os.O_WRONLY|os.O_APPEND|os.O_CREATE, 0660)
 }

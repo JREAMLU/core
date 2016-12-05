@@ -2,7 +2,7 @@
 // This file is licensed under the MIT license.
 // See the LICENSE file.
 
-package user_agent
+package useragent
 
 import "strings"
 
@@ -139,7 +139,7 @@ func gecko(p *UserAgent, comment []string) {
 // argument is a slice of strings containing the comment.
 func trident(p *UserAgent, comment []string) {
 	// Internet Explorer only runs on Windows.
-	p.platform = "Windows"
+	p.platform = Windows
 
 	// The OS can be set before to handle a new case in IE11.
 	if p.os == "" {
@@ -167,8 +167,8 @@ func trident(p *UserAgent, comment []string) {
 func opera(p *UserAgent, comment []string) {
 	slen := len(comment)
 
-	if strings.HasPrefix(comment[0], "Windows") {
-		p.platform = "Windows"
+	if strings.HasPrefix(comment[0], Windows) {
+		p.platform = Windows
 		p.os = normalizeOS(comment[0])
 		if slen > 2 {
 			if slen > 3 && strings.HasPrefix(comment[2], "MRA") {
@@ -216,7 +216,7 @@ func getPlatform(comment []string) string {
 	if len(comment) > 0 {
 		if comment[0] != "compatible" {
 			if strings.HasPrefix(comment[0], "Windows") {
-				return "Windows"
+				return Windows
 			} else if strings.HasPrefix(comment[0], "Symbian") {
 				return "Symbian"
 			} else if strings.HasPrefix(comment[0], "webOS") {
@@ -244,14 +244,14 @@ func (p *UserAgent) detectOS(s section) {
 		switch p.browser.Engine {
 		case "":
 			p.undecided = true
-		case "Gecko":
+		case Gecko:
 			gecko(p, s.comment)
 		case "AppleWebKit":
 			webkit(p, s.comment)
-		case "Trident":
+		case Trident:
 			trident(p, s.comment)
 		}
-	} else if s.name == "Opera" {
+	} else if s.name == Opera {
 		if len(s.comment) > 0 {
 			opera(p, s.comment)
 		}
@@ -265,17 +265,17 @@ func (p *UserAgent) detectOS(s section) {
 	}
 }
 
-// Returns a string containing the platform..
+// Platform Returns a string containing the platform..
 func (p *UserAgent) Platform() string {
 	return p.platform
 }
 
-// Returns a string containing the name of the Operating System.
+// OS Returns a string containing the name of the Operating System.
 func (p *UserAgent) OS() string {
 	return p.os
 }
 
-// Returns a string containing the localization.
+// Localization Returns a string containing the localization.
 func (p *UserAgent) Localization() string {
 	return p.localization
 }

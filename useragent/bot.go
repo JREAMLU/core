@@ -2,7 +2,7 @@
 // This file is licensed under the MIT license.
 // See the LICENSE file.
 
-package user_agent
+package useragent
 
 import (
 	"regexp"
@@ -82,7 +82,7 @@ var botRegex = regexp.MustCompile("(?i)(bot|crawler|sp(i|y)der|search|worm|fetch
 func (p *UserAgent) checkBot(sections []section) {
 	// If there's only one element, and it's doesn't have the Mozilla string,
 	// check whether this is a bot or not.
-	if len(sections) == 1 && sections[0].name != "Mozilla" {
+	if len(sections) == 1 && sections[0].name != Mozilla {
 		p.mozilla = ""
 
 		// Check whether the name has some suspicious "bot" or "crawler" in his name.

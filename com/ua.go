@@ -1,10 +1,11 @@
 package com
 
-import "github.com/JREAMLU/core/user_agent"
+import "github.com/JREAMLU/core/useragent"
 
+// ParseUserAgent parse user agent
 func ParseUserAgent(ual string) map[string]interface{} {
 	res := make(map[string]interface{})
-	ua := user_agent.New(ual)
+	ua := useragent.New(ual)
 
 	ename, eversion := ua.Engine()
 	bname, bversion := ua.Browser()

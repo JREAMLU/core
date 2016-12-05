@@ -7,20 +7,24 @@ import (
 	"github.com/beego/i18n"
 )
 
+// NestPreparer nest preparer
 type NestPreparer interface {
 	NestPrepare()
 }
 
+// BaseController base controller
 type BaseController struct {
 	beego.Controller
 	i18n.Locale
 }
 
+// langType lang type
 type langType struct {
 	Lang string
 	Name string
 }
 
+// Lang lang
 var Lang string
 
 func init() {
@@ -44,9 +48,10 @@ func init() {
 	}
 }
 
-func (this *BaseController) Prepare() {
+// Prepare prepare
+func (r *BaseController) Prepare() {
 	//Accept-Language
-	acceptLanguage := this.Ctx.Request.Header.Get("Accept-Language")
+	acceptLanguage := r.Ctx.Request.Header.Get("Accept-Language")
 	if len(acceptLanguage) > 4 {
 		acceptLanguage = acceptLanguage[:5] // Only compare first 5 letters.
 		if i18n.IsExist(acceptLanguage) {
@@ -59,10 +64,12 @@ func (this *BaseController) Prepare() {
 	}
 }
 
-func (this *BaseController) Tr(format string) string {
+// Tr translate
+func (r *BaseController) Tr(format string) string {
 	return i18n.Tr(Lang, format)
 }
 
+// GetLang get lang
 func GetLang() string {
 	return Lang
 }

@@ -26,7 +26,7 @@ func request(timeout int64) (string, error) {
 	res, err := RollingCurl(
 		Requests{
 			Method: "POST",
-			UrlStr: "http://localhost/study/curl/servera.php",
+			URLStr: "http://localhost/study/curl/servera.php",
 			Header: map[string]string{
 				"Content-Type": "application/json;charset=UTF-8;",
 			},

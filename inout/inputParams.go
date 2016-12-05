@@ -21,6 +21,7 @@ import (
 	"github.com/pquerna/ffjson/ffjson"
 )
 
+// Header header
 type Header struct {
 	Source      []string `json:"Source" valid:"Required"`
 	Version     []string `json:"Version" `
@@ -33,6 +34,7 @@ type Header struct {
 	IP          []string `json:"Ip" valid:"Required"`
 }
 
+// Result result
 type Result struct {
 	CheckRes  map[string]string
 	RequestID string
@@ -41,6 +43,7 @@ type Result struct {
 
 // var Jctx jcontext.Context
 
+// InputParams input params
 func InputParams(r *context.Context) (map[string]interface{}, jcontext.Context) {
 	r.Request.ParseForm()
 
@@ -55,13 +58,13 @@ func InputParams(r *context.Context) (map[string]interface{}, jcontext.Context) 
 	cookiesSlice := r.Request.Cookies()
 	cookies, _ := json.Marshal(cookiesSlice)
 	querystrMap := r.Request.Form
-	querystrJson, _ := json.Marshal(querystrMap)
+	querystrJSON, _ := json.Marshal(querystrMap)
 	querystring := r.Request.RequestURI
 
 	beego.Info(jctx.Value("requestID").(string), ":", "input params header", string(header))
 	beego.Info(jctx.Value("requestID").(string), ":", "input params body", string(body))
 	beego.Info(jctx.Value("requestID").(string), ":", "input params cookies", string(cookies))
-	beego.Info(jctx.Value("requestID").(string), ":", "input params querystrJson", string(querystrJson))
+	beego.Info(jctx.Value("requestID").(string), ":", "input params querystrJson", string(querystrJSON))
 	beego.Info(jctx.Value("requestID").(string), ":", "input params querystring", string(querystring))
 
 	data := make(map[string]interface{})
@@ -69,7 +72,7 @@ func InputParams(r *context.Context) (map[string]interface{}, jcontext.Context) 
 	data["header"] = header
 	data["body"] = body
 	data["cookies"] = string(cookies)
-	data["querystrjson"] = string(querystrJson)
+	data["querystrjson"] = string(querystrJSON)
 	data["headermap"] = headerMap
 	data["cookiesslice"] = cookiesSlice
 	data["querystrmap"] = querystrMap
@@ -79,6 +82,7 @@ func InputParams(r *context.Context) (map[string]interface{}, jcontext.Context) 
 	return data, jctx
 }
 
+// InputParamsCheck input params check
 /**
  *	@auther		jream.lu
  *	@intro		入参验证
@@ -104,7 +108,8 @@ func InputParamsCheck(jctx jcontext.Context, data map[string]interface{}, stdata
 	valid := validation.Validation{}
 
 	for _, val := range stdata {
-		is, err := valid.Valid(val)
+		var is bool
+		is, err = valid.Valid(val)
 		if err != nil {
 			beego.Info(
 				jctx.Value("requestID").(string), ":",
@@ -144,6 +149,7 @@ func InputParamsCheck(jctx jcontext.Context, data map[string]interface{}, stdata
 	return headerRes, nil
 }
 
+// HeaderCheck header check
 /**
  * header参数验证
  * 将header 放入map 返回
@@ -231,12 +237,12 @@ func HeaderParamCheck(h []string, k string) (result Result, err error) {
 	return result, nil
 }
 
-//request id增加
+// GetRequestID request id增加
 func GetRequestID() string {
 	var requestID bytes.Buffer
 	requestID.WriteString(beego.AppConfig.String("appname"))
 	requestID.WriteString("-")
-	requestID.WriteString(guid.NewObjectId().Hex())
+	requestID.WriteString(guid.NewObjectID().Hex())
 
 	return requestID.String()
 }

@@ -7,23 +7,26 @@ import (
 	mgo "gopkg.in/mgo.v2"
 )
 
-type MongoClient struct {
+// MgoClient mongo client
+type MgoClient struct {
 	session *mgo.Session
 	DBName  string
-	Url     string
+	URL     string
 }
 
-func NewMongoClient(url, dbName string) *MongoClient {
-	return &MongoClient{
+// NewMongoClient new mongo client
+func NewMongoClient(url, dbName string) *MgoClient {
+	return &MgoClient{
 		DBName: dbName,
-		Url:    url,
+		URL:    url,
 	}
 }
 
-func (client *MongoClient) Session() (*mgo.Session, error) {
+// Session session
+func (client *MgoClient) Session() (*mgo.Session, error) {
 	var err error
 	if client.session == nil {
-		client.session, err = mgo.Dial(client.Url)
+		client.session, err = mgo.Dial(client.URL)
 		if err != nil {
 			return nil, err
 		}
@@ -34,8 +37,8 @@ func (client *MongoClient) Session() (*mgo.Session, error) {
 	return client.session.Clone(), nil
 }
 
-// Returns true if the collection exists.
-func (client *MongoClient) CollectExists(db *mgo.Database, collectName string) bool {
+// CollectExists Returns true if the collection exists.
+func (client *MgoClient) CollectExists(db *mgo.Database, collectName string) bool {
 	c := db.C(`system.namespaces`)
 	query := c.Find(map[string]string{`name`: fmt.Sprintf(`%s.%s`, client.DBName, collectName)})
 	count, _ := query.Count()

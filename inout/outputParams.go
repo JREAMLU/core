@@ -18,6 +18,7 @@ const (
 	SYSTEMILLEGAL     = 30000
 )
 
+// Output output
 type Output struct {
 	Meta       MetaList    `json:"meta"`
 	StatusCode int         `json:"statusCode"`
@@ -25,12 +26,14 @@ type Output struct {
 	Data       interface{} `json:"data"`
 }
 
+// MetaList meta list
 type MetaList struct {
-	RequestId string    `json:"RequestID"`
+	RequestID string    `json:"RequestID"`
 	UpdatedAt time.Time `json:"updatedAT"`
 	Timezone  string    `json:"timezone"`
 }
 
+// Suc success
 /**
  *	@auther		jream.lu
  *	@intro		出参成功
@@ -41,7 +44,7 @@ type MetaList struct {
  */
 func Suc(data interface{}, requestID string) Output {
 	var op Output
-	op.Meta.RequestId = requestID
+	op.Meta.RequestID = requestID
 	op.Meta.UpdatedAt = time.Now()
 	op.Meta.Timezone = beego.AppConfig.String("Timezone")
 
@@ -52,9 +55,10 @@ func Suc(data interface{}, requestID string) Output {
 	return op
 }
 
+// Fail fail
 func Fail(msg interface{}, status string, requestID string) Output {
 	var op Output
-	op.Meta.RequestId = requestID
+	op.Meta.RequestID = requestID
 	op.Meta.UpdatedAt = time.Now()
 	op.Meta.Timezone = beego.AppConfig.String("Timezone")
 

@@ -2,6 +2,7 @@ package conv
 
 import "net/http"
 
+// CookiesToMap cookies to map
 func CookiesToMap(r *http.Request) map[string]interface{} {
 	var cookies = make(map[string]interface{})
 	for _, v := range r.Cookies() {

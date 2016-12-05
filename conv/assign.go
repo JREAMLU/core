@@ -5,6 +5,7 @@ import (
 	"strconv"
 )
 
+// AssignGetInt64 assgin int64
 func AssignGetInt64(str string) (int64, error) {
 	stri, _ := strconv.ParseInt(str, 10, 64)
 	strs := strconv.FormatInt(stri, 10)
@@ -14,6 +15,7 @@ func AssignGetInt64(str string) (int64, error) {
 	return stri, nil
 }
 
+// AssignGetFloat64 assgin float64
 func AssignGetFloat64(str string) (float64, error) {
 	strf, _ := strconv.ParseFloat(str, 64)
 	strs := strconv.FormatFloat(strf, 'f', -1, 64)
@@ -23,6 +25,7 @@ func AssignGetFloat64(str string) (float64, error) {
 	return strf, nil
 }
 
+// SthToMap map to map
 func SthToMap(sth map[string][]string) map[string]interface{} {
 	var sths = make(map[string]interface{})
 	for k, v := range sth {
@@ -41,6 +44,7 @@ func SthToMap(sth map[string][]string) map[string]interface{} {
 	return sths
 }
 
+// SthsToInt64 map to map
 func SthsToInt64(sth map[string]interface{}) map[string]interface{} {
 	var sths = make(map[string]interface{})
 	for k, v := range sth {

@@ -56,12 +56,12 @@ func Serialize(data interface{}) interface{} {
 		s := reflect.ValueOf(data)
 		keys := s.MapKeys()
 		//ksort
-		sorted_keys := make([]string, 0)
+		var sortedKeys []string
 		for _, key := range keys {
-			sorted_keys = append(sorted_keys, key.Interface().(string))
+			sortedKeys = append(sortedKeys, key.Interface().(string))
 		}
-		sort.Strings(sorted_keys)
-		for _, key := range sorted_keys {
+		sort.Strings(sortedKeys)
+		for _, key := range sortedKeys {
 			serial := Serialize(s.MapIndex(reflect.ValueOf(key)).Interface())
 			if reflect.TypeOf(serial).Kind() == reflect.Float64 {
 				serial = strconv.Itoa(int(serial.(float64)))
@@ -75,7 +75,7 @@ func Serialize(data interface{}) interface{} {
 	return data
 }
 
-//VaildSignT 签名验证
+// ValidSignT 签名验证
 func ValidSignT(requestData []byte, sign string, timestamp int64, secretKey string) error {
 	var rdata map[string]interface{}
 	json.Unmarshal(requestData, &rdata)
