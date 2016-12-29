@@ -1,45 +1,24 @@
 package jlogs
 
 import (
-	"time"
-
 	"github.com/astaxie/beego"
+	"github.com/astaxie/beego/logs"
 )
-
-/*
-const (
-	LevelTrace         = 7
-	LevelDebug         = 7
-	LevelInfo          = 6
-	LevelInformational = 6
-	LevelNotice        = 5
-	LevelWarning       = 4
-	LevelWarn          = 4
-	LevelError         = 3
-	LevelCritical      = 2
-	LevelAlert         = 1
-	LevelEmergency     = 0
-)
-*/
 
 // InitLogs init logs
 func InitLogs() {
-	path := beego.AppConfig.String("log.path") + beego.AppConfig.String("appname") + time.Now().Format("2006-01-02") + ".log"
+	path := beego.AppConfig.String("log.path") + beego.AppConfig.String("appname") + ".log"
 	file := beego.AppConfig.String("log.file")
 	console, _ := beego.AppConfig.Bool("log.console")
 	level, _ := beego.AppConfig.Int("log.level")
-	filename := `{"filename":"` + path + `","separate":["` + file + `"],"daily":false}`
+	daily := beego.AppConfig.String("log.daily")
+	maxdays := beego.AppConfig.String("log.maxdays")
+	filename := `{"filename":"` + path + `", "separate":["` + file + `"], "daily": ` + daily + `, "maxdays": ` + maxdays + `}`
 
 	if !console {
 		beego.BeeLogger.DelLogger("console")
 	}
 
-	beego.SetLogger("multifile", filename)
-
-	//ElasticSearch
-	// esFilename := `{"dsn":"` + beego.AppConfig.String("es.dns") + `"}`
-	// fmt.Println(esFilename)
-	// beego.SetLogger("es", esFilename)
-
+	beego.SetLogger(logs.AdapterMultiFile, filename)
 	beego.SetLevel(level)
 }

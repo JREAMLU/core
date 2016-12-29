@@ -1,11 +1,13 @@
 package mq
 
 import (
+	"fmt"
 	llog "log"
 	"os"
 	"time"
 
 	"github.com/Shopify/sarama"
+	"github.com/astaxie/beego"
 	log "github.com/thinkboy/log4go"
 	"github.com/wvanbergen/kafka/consumergroup"
 )
@@ -24,6 +26,8 @@ type KafkaConsumer struct {
 func (kc *KafkaConsumer) InitKafkaConsumer(prehookF func(), handleF func(string), posthookF func()) error {
 	log.Info("start topic:%s consumer", kc.Topic)
 	log.Info("consumer group name:%s", kc.GoupName)
+	beego.Info(fmt.Sprintf("start topic:%s consumer", kc.Topic))
+	beego.Info(fmt.Sprintf("consumer group name:%s", kc.GoupName))
 	sarama.Logger = llog.New(os.Stdout, "[Sarama] ", llog.LstdFlags)
 	config := consumergroup.NewConfig()
 	config.Offsets.Initial = sarama.OffsetNewest
@@ -43,6 +47,7 @@ func (kc *KafkaConsumer) InitKafkaConsumer(prehookF func(), handleF func(string)
 	go func() {
 		for err := range cg.Errors() {
 			log.Error("consumer error(%v)", err)
+			beego.Error(fmt.Sprintf("consumer error(%v)", err))
 		}
 	}()
 
@@ -50,6 +55,8 @@ func (kc *KafkaConsumer) InitKafkaConsumer(prehookF func(), handleF func(string)
 		for msg := range cg.Messages() {
 			log.Info("deal with topic:%s, partitionId:%d, Offset:%d, Key:%s msg:%s ", msg.Topic, msg.Partition, msg.Offset, msg.Key, msg.Value)
 			log.Info("handle msg: % s ", msg.Value)
+			beego.Info(fmt.Sprintf("deal with topic:%s, partitionId:%d, Offset:%d, Key:%s msg:%s ", msg.Topic, msg.Partition, msg.Offset, msg.Key, msg.Value))
+			beego.Info(fmt.Sprintf("handle msg: % s ", msg.Value))
 
 			//handle 消费消息
 			handleF(string(msg.Value))

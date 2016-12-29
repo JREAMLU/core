@@ -1,7 +1,10 @@
 package mq
 
 import (
+	"fmt"
+
 	"github.com/Shopify/sarama"
+	"github.com/astaxie/beego"
 	log "github.com/thinkboy/log4go"
 )
 
@@ -28,6 +31,7 @@ func handleSuccess(p sarama.AsyncProducer) {
 		pm := <-p.Successes()
 		if pm != nil {
 			log.Info("producer message success, partition:%d offset:%d key:%v valus:%s", pm.Partition, pm.Offset, pm.Key, pm.Value)
+			beego.Info(fmt.Sprintf("producer message success, partition:%d offset:%d key:%v valus:%s", pm.Partition, pm.Offset, pm.Key, pm.Value))
 		}
 	}
 }
@@ -37,6 +41,7 @@ func handleError(p sarama.AsyncProducer) {
 		err := <-p.Errors()
 		if err != nil {
 			log.Error("producer message error, partition:%d offset:%d key:%v valus:%s error(%v)", err.Msg.Partition, err.Msg.Offset, err.Msg.Key, err.Msg.Value, err.Err)
+			beego.Info(fmt.Sprintf("producer message error, partition:%d offset:%d key:%v valus:%s error(%v)", err.Msg.Partition, err.Msg.Offset, err.Msg.Key, err.Msg.Value, err.Err))
 		}
 	}
 }
@@ -56,5 +61,6 @@ func Close() {
 	err := producer.Close()
 	if err != nil {
 		log.Error("关闭AsyncProducer时发生错误:%s", err.Error())
+		beego.Error(fmt.Sprintf("关闭AsyncProducer时发生错误:%s", err.Error()))
 	}
 }
