@@ -21,7 +21,7 @@ import (
 func TestLogs(t *testing.T) {
 	Convey("func Logs()", t, func() {
 		Convey("correct", func() {
-			beego.SetLogger(logs.AdapterConn, `{"net":"udp4","addr":"172.16.9.221:1200"}`)
+			beego.SetLogger(logs.AdapterConn, `{"net":"udp4","addr":"127.0.0.1:1200"}`)
 			beego.Info("info 123")
 		})
 	})
@@ -40,15 +40,15 @@ func TestLogs(t *testing.T) {
 // 	b.StopTimer()
 // }
 
-func BenchmarkLogs(b *testing.B) {
-	beego.SetLogger(logs.AdapterConn, `{"net":"udp4","addr":"127.0.0.1:1200"}`)
-	b.StopTimer()
-	b.StartTimer()
-	for i := 0; i < b.N; i++ {
-		beego.Info("info 123")
-	}
-	b.StopTimer()
-}
+// func BenchmarkLogs(b *testing.B) {
+// 	beego.SetLogger(logs.AdapterConn, `{"net":"udp4","addr":"127.0.0.1:1200"}`)
+// 	b.StopTimer()
+// 	b.StartTimer()
+// 	for i := 0; i < b.N; i++ {
+// 		beego.Info("info 123")
+// 	}
+// 	b.StopTimer()
+// }
 
 // func BenchmarkLogsParallel(b *testing.B) {
 // 	beego.SetLogger(logs.AdapterConn, `{"net":"udp4","addr":":1200"}`)
