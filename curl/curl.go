@@ -46,7 +46,6 @@ RELOAD:
 	}
 
 	resp, err := client.Do(req)
-	rp.Response = resp
 	if err != nil {
 		i++
 		if i < r.RetryTimes {
@@ -54,6 +53,7 @@ RELOAD:
 		}
 		return rp, err
 	}
+	rp.Response = resp
 
 	defer resp.Body.Close()
 
