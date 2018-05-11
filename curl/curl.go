@@ -1,6 +1,7 @@
 package curl
 
 import (
+	"encoding/json"
 	"io/ioutil"
 	"net/http"
 	"strings"
@@ -9,46 +10,60 @@ import (
 
 // Requests struct
 type Requests struct {
-	Method     string
-	URLStr     string
-	Header     map[string]string
-	Raw        string
-	RetryTimes int64
-	Timeout    int64
+	HTTPClient *http.Client
 }
 
 // Responses struct
 type Responses struct {
 	Response *http.Response
 	Body     string
+	Data     interface{}
+}
+
+const (
+	// MaxIdleConnections maxIdleConnections
+	MaxIdleConnections = 100
+	// MaxConnectionIdleTime 连接池中一个连接可以idle的时长
+	MaxConnectionIdleTime = 60 * time.Second
+	timeout               = 3
+)
+
+// NewRequests new requests
+func NewRequests() *Requests {
+	return &Requests{
+		HTTPClient: &http.Client{
+			Transport: &http.Transport{
+				MaxIdleConnsPerHost: MaxIdleConnections,
+				IdleConnTimeout:     MaxConnectionIdleTime,
+			},
+			Timeout: time.Duration(timeout) * time.Second,
+		},
+	}
 }
 
 //RollingCurl http请求url
-func RollingCurl(r Requests) (rp Responses, err error) {
+func (r *Requests) RollingCurl(Method string, URLStr string, Header map[string]string, Raw string, RetryTimes int64, data interface{}) (rp Responses, err error) {
 	var i int64
-RELOAD:
-	client := &http.Client{
-		Timeout: time.Duration(r.Timeout) * time.Second,
-	}
-
 	req, err := http.NewRequest(
-		r.Method,
-		r.URLStr,
-		strings.NewReader(r.Raw),
+		Method,
+		URLStr,
+		strings.NewReader(Raw),
 	)
 
 	if err != nil {
 		return rp, err
 	}
 
-	for hkey, hval := range r.Header {
+	for hkey, hval := range Header {
 		req.Header.Set(hkey, hval)
 	}
 
-	resp, err := client.Do(req)
+RELOAD:
+
+	resp, err := r.HTTPClient.Do(req)
 	if err != nil {
 		i++
-		if i < r.RetryTimes {
+		if i < RetryTimes {
 			goto RELOAD
 		}
 		return rp, err
@@ -63,5 +78,13 @@ RELOAD:
 	}
 
 	rp.Body = string(body)
+
+	err = json.Unmarshal(body, data)
+	if err != nil {
+		return rp, err
+	}
+
+	rp.Data = data
+
 	return rp, nil
 }
