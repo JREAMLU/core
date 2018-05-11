@@ -79,6 +79,15 @@ RELOAD:
 
 	rp.Body = string(body)
 
+	if data != nil {
+		err = json.Unmarshal(body, data)
+		if err != nil {
+			return rp, err
+		}
+
+		rp.Data = data
+	}
+
 	err = json.Unmarshal(body, data)
 	if err != nil {
 		return rp, err
